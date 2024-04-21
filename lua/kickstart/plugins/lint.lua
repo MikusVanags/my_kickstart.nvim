@@ -52,4 +52,48 @@ return {
       })
     end,
   },
+  {
+    'https://gitlab.com/schrieveslaach/sonarlint.nvim',
+    dependencies = {
+      'mfussenegger/nvim-jdtls',
+      'williamboman/mason.nvim',
+      'williamboman/mason-lspconfig.nvim',
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
+    },
+    autostart = true,
+    ft = {
+      'apex',
+      'cls',
+      'trigger',
+      'cmp',
+      'html',
+      'javascript',
+      'css',
+    },
+    config = function()
+      require('sonarlint').setup {
+        server = {
+          cmd = {
+            'sonarlint-language-server',
+            -- Ensure that sonarlint-language-server uses stdio channel
+            '-stdio',
+            '-analyzers',
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarhtml.jar',
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarjava.jar',
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonartext.jar',
+            vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarjs.jar',
+          },
+        },
+        filetypes = {
+          'apex',
+          'cls',
+          'trigger',
+          'cmp',
+          'html',
+          'javascript',
+          'css',
+        },
+      }
+    end,
+  },
 }
