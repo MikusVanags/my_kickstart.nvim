@@ -61,10 +61,10 @@ return {
       'WhoIsSethDaniel/mason-tool-installer.nvim',
     },
     autostart = true,
-    ft = {
-      'apex',
-      'cls',
-      'trigger',
+    filetypes = {
+      -- 'apex',
+      -- 'cls',
+      -- 'trigger',
       'cmp',
       'html',
       'javascript',
@@ -74,7 +74,7 @@ return {
       require('sonarlint').setup {
         server = {
           cmd = {
-            'sonarlint-language-server',
+            '/home/mikus/.local/share/nvim/mason/bin/sonarlint-language-server',
             -- Ensure that sonarlint-language-server uses stdio channel
             '-stdio',
             '-analyzers',
@@ -83,16 +83,27 @@ return {
             vim.fn.expand '$MASON/share/sonarlint-analyzers/sonartext.jar',
             vim.fn.expand '$MASON/share/sonarlint-analyzers/sonarjs.jar',
           },
+          filetypes = {
+            -- 'apex',
+            -- 'cls',
+            -- 'trigger',
+            'cmp',
+            'html',
+            'javascript',
+            'css',
+          },
+          autostart = true,
         },
         filetypes = {
-          'apex',
-          'cls',
-          'trigger',
+          -- 'apex',
+          -- 'cls',
+          -- 'trigger',
           'cmp',
           'html',
           'javascript',
           'css',
         },
+        autostart = true,
       }
     end,
   },

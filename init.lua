@@ -145,6 +145,13 @@ vim.opt.splitbelow = true
 vim.opt.list = true
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
+-- tab looks like 4 spaces
+-- NOTE: can use ftplugin to use only on specific files
+vim.o.tabstop = 4 -- A TAB character looks like 4 spaces
+vim.o.expandtab = true -- Pressing the TAB key will insert spaces instead of a TAB character
+vim.o.softtabstop = 4 -- Number of spaces inserted instead of a TAB character
+vim.o.shiftwidth = 4 -- Number of spaces inserted when indenting
+
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
@@ -161,7 +168,7 @@ vim.opt.scrolloff = 10
 vim.opt.hlsearch = true
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
--- TreeSitter for Apex
+-- TreeSitter for Apex/Salesforce things
 vim.filetype.add {
   extension = {
     ['cls'] = 'apex',
@@ -580,7 +587,7 @@ require('lazy').setup({
             'cls',
             'trigger',
           },
-          apex_jar_path = '/home/mikus/lsp/Apex/apex-jorje-lsp.jar',
+          apex_jar_path = '/home/mikus/.local/share/nvim/mason/packages/apex-language-server/extension/dist/apex-jorje-lsp.jar',
           apex_enable_semantic_errors = false, -- Whether to allow Apex Language Server to surface semantic errors
           apex_enable_completion_statistics = true, -- Whether to allow Apex Language Server to collect telemetry on code completion usage
         },
@@ -596,9 +603,7 @@ require('lazy').setup({
           cmd = { 'node', '/home/mikus/.npm-global/node_modules/lwc/node_modules/@salesforce/lwc-language-server/bin/lwc-language-server.js', '--stdio' },
         },
 
-        eslint = {
-          cmd = { '/mnt/c/Users/epicm/AppData/Roaming/npm/vscode-eslint-language-server', '--stdio' },
-        },
+        eslint = {},
 
         lua_ls = {
           -- cmd = {...},
@@ -628,6 +633,8 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
+        'prettier',
+        'prettierd',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -660,7 +667,7 @@ require('lazy').setup({
       },
     },
     opts = {
-      notify_on_error = false,
+      notify_on_error = true,
       format_on_save = function(bufnr)
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
@@ -678,6 +685,7 @@ require('lazy').setup({
         css = { 'prettier' },
         xml = { 'prettier' },
         html = { 'prettier' },
+        json = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -685,6 +693,16 @@ require('lazy').setup({
         -- is found.
         -- javascript = { { "prettierd", "prettier" } },
       },
+      -- formatters = {
+      --   prettier = {
+      --     prepend_args = function(self, ctx)
+      --       if vim.endswith(ctx.filename, '.cls') or vim.endswith(ctx.filename, '.trigger') then
+      --         return { '--plugin', 'prettier-plugin-apex', '--write', '$FILENAME' }
+      --       end
+      --       return {}
+      --     end,
+      --   },
+      -- },
     },
   },
   { -- Autocompletion
@@ -713,6 +731,12 @@ require('lazy').setup({
           --     require('luasnip.loaders.from_vscode').lazy_load()
           --   end,
           -- },
+          {
+            'beyond-the-cloud-dev/vsc-salesforce-code-snippets',
+            config = function()
+              require('luasnip.loaders.from_vscode').lazy_load()
+            end,
+          },
         },
       },
       'saadparwaiz1/cmp_luasnip',
@@ -761,6 +785,8 @@ require('lazy').setup({
           --  completions whenever it has completion options available.
           ['<C-Space>'] = cmp.mapping.complete {},
 
+          ['<C-o>'] = cmp.mapping.open_docs,
+
           -- Think of <c-l> as moving to the right of your snippet expansion.
           --  So if you have a snippet that's like:
           --  function $name($args)
@@ -803,9 +829,18 @@ require('lazy').setup({
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'tokyonight-night'
 
       -- You can configure highlights by doing something like:
+      -- vim.cmd.hi 'Comment gui=none'
+    end,
+  },
+
+  {
+    'rose-pine/neovim',
+    priority = 1010,
+    init = function()
+      vim.cmd.colorscheme 'rose-pine-moon'
       vim.cmd.hi 'Comment gui=none'
     end,
   },
@@ -904,7 +939,7 @@ require('lazy').setup({
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
-    vim.g.have_nerd_font,
+    icons = vim.g.have_nerd_font and {},
   },
 })
 
