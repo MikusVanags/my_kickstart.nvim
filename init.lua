@@ -175,6 +175,7 @@ vim.filetype.add {
     ['trigger'] = 'apex',
     ['cmp'] = 'html',
     ['page'] = 'html',
+    ['component'] = 'component',
   },
 }
 
@@ -255,8 +256,14 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-
+  {
+    'numToStr/Comment.nvim',
+    opts = {},
+    init = function()
+      local ft = require 'Comment.ft'
+      ft.set('apex', { '//%s', '/*%s*/' })
+    end,
+  },
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -308,6 +315,11 @@ require('lazy').setup({
         ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
         ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
         ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+        -- { "<leader>c", group = "[C]ode" },
+        -- { "<leader>d", group = "[D]ocument" },
+        -- { "<leader>r", group = "[R]ename" },
+        -- { "<leader>s", group = "[S]earch" },
+        -- { "<leader>w", group = "[W]orkspace" },
       }
     end,
   },
@@ -603,6 +615,10 @@ require('lazy').setup({
           cmd = { 'node', '/home/mikus/.npm-global/node_modules/lwc/node_modules/@salesforce/lwc-language-server/bin/lwc-language-server.js', '--stdio' },
         },
 
+        visualforce_ls = {
+          filetypes = { 'component' },
+        },
+
         eslint = {},
 
         lua_ls = {
@@ -686,6 +702,7 @@ require('lazy').setup({
         xml = { 'prettier' },
         html = { 'prettier' },
         json = { 'prettier' },
+        -- component = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -840,13 +857,152 @@ require('lazy').setup({
     'rose-pine/neovim',
     priority = 1010,
     init = function()
-      vim.cmd.colorscheme 'rose-pine-moon'
-      vim.cmd.hi 'Comment gui=none'
+      -- vim.cmd.colorscheme 'rose-pine-moon'
+      -- vim.cmd.hi 'Comment gui=none'
+      require('rose-pine').setup {
+        variant = 'auto', -- auto, main, moon, or dawn
+        dark_variant = 'moon', -- main, moon, or dawn
+        dim_inactive_windows = true,
+        extend_background_behind_borders = true,
+        nable = {
+          terminal = true,
+          legacy_highlights = true, -- Improve compatibility for previous versions of Neovim
+          migrations = true, -- Handle deprecated options automatically
+        },
+        styles = {
+          bold = true,
+          italic = true,
+          transparency = true,
+        },
+        palette = {
+          moon = {
+            -- base = '#000000',
+            -- overlay = '#000000',
+            -- surface = '#000000',
+            -- highlight_low = '#000000',
+            -- highlight_med = '#000000',
+            -- highlight_high = '#000000',
+            -- highlight = '#000000',
+          },
+        },
+      }
+    end,
+  },
+
+  {
+    'catppuccin/nvim',
+    name = 'catppuccin',
+    priority = 1020,
+    init = function()
+      require('catppuccin').setup {
+        flavour = 'auto', -- latte, frappe, macchiato, mocha
+        background = { -- :h background
+          light = 'latte',
+          dark = 'mocha',
+        },
+        transparent_background = true, -- disables setting the background color.
+        show_end_of_buffer = true, -- shows the '~' characters after the end of buffers
+        term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
+        dim_inactive = {
+          enabled = false, -- dims the background color of inactive window
+          shade = 'dark',
+          percentage = 0.15, -- percentage of the shade to apply to the inactive window
+        },
+        no_italic = false, -- Force no italic
+        no_bold = false, -- Force no bold
+        no_underline = false, -- Force no underline
+        styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
+          comments = { 'italic' }, -- Change the style of comments
+          conditionals = { 'italic' },
+          loops = {},
+          functions = {},
+          keywords = {},
+          strings = {},
+          variables = {},
+          numbers = {},
+          booleans = {},
+          properties = {},
+          types = {},
+          operators = {},
+          -- miscs = {}, -- Uncomment to turn off hard-coded styles
+        },
+        color_overrides = {},
+        custom_highlights = {},
+        default_integrations = true,
+        integrations = {
+          cmp = true,
+          gitsigns = true,
+          nvimtree = true,
+          treesitter = true,
+          notify = false,
+          mason = true,
+          dap = true,
+          which_key = true,
+          native_lsp = {
+            enabled = true,
+            virtual_text = {
+              errors = { 'italic' },
+              hints = { 'italic' },
+              warnings = { 'italic' },
+              information = { 'italic' },
+              ok = { 'italic' },
+            },
+            underlines = {
+              errors = { 'underline' },
+              hints = { 'underline' },
+              warnings = { 'underline' },
+              information = { 'underline' },
+              ok = { 'underline' },
+            },
+            inlay_hints = {
+              background = true,
+            },
+          },
+          mini = {
+            enabled = true,
+            indentscope_color = '',
+          },
+          -- For more plugins integrations please scroll down (https://github.com/catppuccin/nvim#integrations)
+        },
+      }
     end,
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    event = 'VimEnter',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = {
+      signs = true,
+      keywords = {
+        IDEA = { icon = '', color = 'idea', alt = { 'IDEAS' } },
+      },
+      colors = {
+        idea = { '#6bb300' },
+      },
+    },
+  },
+  {
+    'lunarVim/bigfile.nvim',
+    opts = {},
+    init = function()
+      -- require('bigfile').setup {
+      --   filesize = 1, -- size of the file in MiB, the plugin round file sizes to the closest MiB
+      --   pattern = { '*' }, -- autocmd pattern or function see <### Overriding the detection of big files>
+      --   features = { -- features to disable
+      --     'indent_blankline',
+      --     'illuminate',
+      --     'lsp',
+      --     'treesitter',
+      --     'syntax',
+      --     'matchparen',
+      --     'vimopts',
+      --     'filetype',
+      --   },
+      -- }
+    end,
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
@@ -916,6 +1072,24 @@ require('lazy').setup({
     end,
   },
 
+  -- {
+  --   'github/copilot.vim',
+  -- },
+  -- CSS color preview
+  { -- Highlight, edit, and navigate code
+    'NvChad/nvim-colorizer.lua',
+    opts = {},
+    init = function()
+      require('colorizer').setup {
+        filetypes = {
+          css = { rgb_fn = true },
+          'javascript',
+          html = { mode = 'foreground' },
+        },
+        user_default_options = { mode = 'background' },
+      }
+    end,
+  },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -942,6 +1116,9 @@ require('lazy').setup({
     icons = vim.g.have_nerd_font and {},
   },
 })
+
+vim.cmd.colorscheme 'rose-pine'
+-- vim.cmd.colorscheme 'catppuccin'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
