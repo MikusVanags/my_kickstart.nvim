@@ -200,6 +200,10 @@ vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 vim.keymap.set('n', '<leader>e', '<cmd>Explore<CR>', { desc = '[E]xplore' })
 vim.keymap.set('n', '<leader>se', '<cmd>Sexplore!"<CR>', { desc = '[S]plit [E]xplore' })
 
+vim.keymap.set('n', '<leader>un', function()
+  require('notify').dismiss { silent = true, pending = true }
+end, { desc = 'Dismiss all notifications' })
+
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -912,7 +916,7 @@ require('lazy').setup({
       require('poimandres').setup {
         -- bold_vert_split = false, -- use bold vertical separators
         -- dim_nc_background = false, -- dim 'non-current' window backgrounds
-        -- disable_background = false, -- disable background
+        disable_background = true, -- disable background
         -- disable_float_background = false, -- disable background for floats
         -- disable_italics = false, -- disable italics
       }
@@ -931,11 +935,9 @@ require('lazy').setup({
         },
         transparent_background = true, -- disables setting the background color.
         show_end_of_buffer = true, -- shows the '~' characters after the end of buffers
-        term_colors = false, -- sets terminal colors (e.g. `g:terminal_color_0`)
+        term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
         dim_inactive = {
           enabled = false, -- dims the background color of inactive window
-          shade = 'dark',
-          percentage = 0.15, -- percentage of the shade to apply to the inactive window
         },
         no_italic = false, -- Force no italic
         no_bold = false, -- Force no bold
@@ -963,7 +965,7 @@ require('lazy').setup({
           gitsigns = true,
           nvimtree = true,
           treesitter = true,
-          notify = false,
+          notify = true,
           mason = true,
           dap = true,
           which_key = true,
@@ -1123,6 +1125,7 @@ require('lazy').setup({
         filetypes = {
           css = { rgb_fn = true },
           html = { mode = 'foreground' },
+          'lua',
         },
         user_default_options = { mode = 'background' },
       }
@@ -1171,7 +1174,7 @@ require('lazy').setup({
 })
 
 -- vim.cmd.colorscheme 'rose-pine'
-vim.cmd.colorscheme 'rose-pine'
+vim.cmd.colorscheme 'rose-pine-moon'
 vim.notify = require 'notify'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
