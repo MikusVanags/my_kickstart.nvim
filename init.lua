@@ -100,6 +100,7 @@ vim.opt.termguicolors = true
 --  For more options, you can see `:help option-list`
 
 -- Make line numbers default
+vim.opt.fixendofline = true
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
