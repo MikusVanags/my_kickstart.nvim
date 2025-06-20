@@ -1133,7 +1133,14 @@ require('lazy').setup({
     end,
   },
   -- Custom Notifications
-  { 'rcarriga/nvim-notify' },
+  {
+    'rcarriga/nvim-notify',
+    init = function()
+      require('notify').setup {
+        background_colour = '#000000',
+      }
+    end,
+  },
 
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
