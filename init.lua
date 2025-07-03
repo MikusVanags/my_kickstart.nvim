@@ -617,7 +617,6 @@ require('lazy').setup({
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
       --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
       local capabilities = require('blink.cmp').get_lsp_capabilities()
-
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -639,6 +638,27 @@ require('lazy').setup({
         --     'trigger',
         --   },
         -- },
+        --
+        -- apex_ls = {
+        --   cmd = {
+        --     'java',
+        --     '-jar',
+        --     '--stdio',
+        --   },
+        --   filetypes = { 'apex' },
+        --   root_dir = require('lspconfig').util.root_pattern '.git',
+        -- },
+        --
+        apex_ls = {
+          cmd = {
+            'java',
+            '-jar',
+            vim.fn.expand '$HOME/lsp/Apex/apex-jorje-lsp.jar',
+            '--stdio',
+          },
+          filetypes = { 'apex' },
+          root_dir = require('lspconfig.util').root_pattern '.git',
+        },
 
         lwc_ls = {
           filetypes = {
@@ -681,7 +701,8 @@ require('lazy').setup({
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      local ensure_installed = vim.tbl_keys(servers or {})
+      -- local ensure_installed = vim.tbl_keys(servers or {})
+      local ensure_installed = vim.tbl_keys {}
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'prettier',
@@ -702,6 +723,7 @@ require('lazy').setup({
           end,
         },
       }
+      require('lspconfig').apex_ls.setup(servers['apex_ls'])
     end,
   },
 
