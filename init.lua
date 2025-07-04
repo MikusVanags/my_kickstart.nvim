@@ -201,9 +201,9 @@ vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
 vim.keymap.set('n', '<leader>e', '<cmd>Explore<CR>', { desc = '[E]xplore' })
 vim.keymap.set('n', '<leader>se', '<cmd>Sexplore!"<CR>', { desc = '[S]plit [E]xplore' })
 
-vim.keymap.set('n', '<leader>un', function()
-  require('notify').dismiss { silent = true, pending = true }
-end, { desc = 'Dismiss all notifications' })
+-- vim.keymap.set('n', '<leader>un', function()
+--   require('notify').dismiss { silent = true, pending = true }
+-- end, { desc = 'Dismiss all notifications' })
 
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
@@ -534,7 +534,30 @@ require('lazy').setup({
           -- Jump to the definition of the word under your cursor.
           --  This is where a variable was first declared, or where a function is defined, etc.
           --  To jump back, press <C-t>.
-          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
+          map('gd', function()
+            -- First check if there's an LSP client that supports definition
+            local clients = vim.lsp.get_active_clients { bufnr = 0 }
+            local has_definition_support = false
+
+            for _, client in ipairs(clients) do
+              if client.server_capabilities.definitionProvider then
+                has_definition_support = true
+                break
+              end
+            end
+
+            if has_definition_support then
+              -- Try LSP first
+              local result = vim.lsp.buf_request_sync(0, 'textDocument/definition', vim.lsp.util.make_position_params(), 1000)
+              if result and result[1] and result[1].result and #result[1].result > 0 then
+                vim.lsp.buf.definition()
+                return
+              end
+            end
+
+            -- Fallback to ctags if LSP isn't available or found nothing
+            vim.cmd [[silent! execute "normal! \<C-]>"]]
+          end, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
           map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
@@ -612,6 +635,17 @@ require('lazy').setup({
         end,
       })
 
+      require('lspconfig').apex_ls.setup {
+        cmd = {
+          'java',
+          '-jar',
+          vim.fn.expand '$HOME/lsp/Apex/apex-jorje-lsp.jar',
+          '--stdio',
+        },
+        filetypes = { 'apex' },
+        root_dir = require('lspconfig').util.root_pattern '.git',
+      }
+
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -649,16 +683,16 @@ require('lazy').setup({
         --   root_dir = require('lspconfig').util.root_pattern '.git',
         -- },
         --
-        apex_ls = {
-          cmd = {
-            'java',
-            '-jar',
-            vim.fn.expand '$HOME/lsp/Apex/apex-jorje-lsp.jar',
-            '--stdio',
-          },
-          filetypes = { 'apex' },
-          root_dir = require('lspconfig.util').root_pattern '.git',
-        },
+        -- apex_ls = {
+        --   cmd = {
+        --     'java',
+        --     '-jar',
+        --     vim.fn.expand '$HOME/lsp/Apex/apex-jorje-lsp.jar',
+        --     '--stdio',
+        --   },
+        --   filetypes = { 'apex' },
+        --   root_dir = require('lspconfig.util').root_pattern '.git',
+        -- },
 
         lwc_ls = {
           filetypes = {
@@ -723,7 +757,7 @@ require('lazy').setup({
           end,
         },
       }
-      require('lspconfig').apex_ls.setup(servers['apex_ls'])
+      -- require('lspconfig').apex_ls.setup(servers['apex_ls'])
     end,
   },
 
@@ -988,7 +1022,7 @@ require('lazy').setup({
           gitsigns = true,
           nvimtree = true,
           treesitter = true,
-          notify = true,
+          -- notify = true,
           mason = true,
           dap = true,
           which_key = true,
@@ -1155,14 +1189,14 @@ require('lazy').setup({
     end,
   },
   -- Custom Notifications
-  {
-    'rcarriga/nvim-notify',
-    init = function()
-      require('notify').setup {
-        background_colour = '#000000',
-      }
-    end,
-  },
+  -- {
+  --   'rcarriga/nvim-notify',
+  --   init = function()
+  --     require('notify').setup {
+  --       background_colour = '#000000',
+  --     }
+  --   end,
+  -- },
 
   require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
@@ -1205,7 +1239,9 @@ require('lazy').setup({
 
 -- vim.cmd.colorscheme 'rose-pine'
 vim.cmd.colorscheme 'rose-pine-moon'
-vim.notify = require 'notify'
+-- vim.notify = require 'notify'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+vim.opt.tags = './tags,tags'
+vim.opt.tagfunc = 'v:lua.vim.lsp.tagfunc'
