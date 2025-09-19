@@ -639,7 +639,7 @@ require('lazy').setup({
         cmd = {
           'java',
           '-jar',
-          vim.fn.expand '$HOME/lsp/Apex/apex-jorje-lsp.jar',
+          vim.fn.expand '$HOME/.local/share/nvim/mason/share/apex-language-server/apex-jorje-lsp.jar',
           '--stdio',
         },
         filetypes = { 'apex' },
@@ -735,8 +735,8 @@ require('lazy').setup({
 
       -- You can add other tools here that you want Mason to install
       -- for you, so that they are available from within Neovim.
-      -- local ensure_installed = vim.tbl_keys(servers or {})
-      local ensure_installed = vim.tbl_keys {}
+      local ensure_installed = vim.tbl_keys(servers or {})
+      -- local ensure_installed = vim.tbl_keys {}
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'prettier',
