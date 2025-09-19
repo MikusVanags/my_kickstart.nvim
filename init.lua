@@ -836,6 +836,7 @@ require('lazy').setup({
         opts = {},
       },
       'folke/lazydev.nvim',
+      'fang2hou/blink-copilot',
     },
     --- @module 'blink.cmp'
     --- @type blink.cmp.Config
@@ -881,9 +882,15 @@ require('lazy').setup({
       },
 
       sources = {
-        default = { 'lsp', 'path', 'snippets', 'lazydev' },
+        default = { 'lsp', 'path', 'snippets', 'lazydev', 'copilot' },
         providers = {
           lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
+          copilot = {
+            name = 'copilot',
+            module = 'blink-copilot',
+            score_offset = 1000,
+            async = true,
+          },
         },
       },
 
@@ -1162,6 +1169,22 @@ require('lazy').setup({
   },
   {
     'github/copilot.vim',
+    cmd = 'Copilot',
+    event = 'BufWinEnter',
+    init = function()
+      vim.g.copilot_no_maps = true
+    end,
+    config = function()
+      -- Block the normal Copilot suggestions
+      vim.api.nvim_create_augroup('github_copilot', { clear = true })
+      vim.api.nvim_create_autocmd({ 'FileType', 'BufUnload' }, {
+        group = 'github_copilot',
+        callback = function(args)
+          vim.fn['copilot#On' .. args.event]()
+        end,
+      })
+      vim.fn['copilot#OnFileType']()
+    end,
   },
 
   -- CSS color preview
