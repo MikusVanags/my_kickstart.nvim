@@ -1041,29 +1041,28 @@ require('lazy').setup({
             },
         },
     },
-    {
-        'lunarVim/bigfile.nvim',
-        opts = {},
-        init = function()
-            -- require('bigfile').setup {
-            --   filesize = 1, -- size of the file in MiB, the plugin round file sizes to the closest MiB
-            --   pattern = { '*' }, -- autocmd pattern or function see <### Overriding the detection of big files>
-            --   features = { -- features to disable
-            --     'indent_blankline',
-            --     'illuminate',
-            --     'lsp',
-            --     'treesitter',
-            --     'syntax',
-            --     'matchparen',
-            --     'vimopts',
-            --     'filetype',
-            --   },
-            -- }
-        end,
-    },
+    -- {
+    --     'lunarVim/bigfile.nvim',
+    --     opts = {},
+    --     init = function()
+    --         require('bigfile').setup {
+    --             filesize = 1, -- size of the file in MiB, the plugin round file sizes to the closest MiB
+    --             --   pattern = { '*' }, -- autocmd pattern or function see <### Overriding the detection of big files>
+    --             -- features = { -- features to disable
+    --                 --     'indent_blankline',
+    --                 --     'illuminate',
+    --                 --     'lsp',
+    --                 --     'treesitter',
+    --                 --     'syntax',
+    --                 --     'matchparen',
+    --                 --     'vimopts',
+    --                 'filetype',
+    --             },
+    --     end,
+    -- },
 
     { -- Collection of various small independent plugins/modules
-        'echasnovski/mini.nvim',
+        'nvim-mini/mini.nvim',
         config = function()
             -- Better Around/Inside textobjects
             --
@@ -1098,7 +1097,7 @@ require('lazy').setup({
             end
 
             -- ... and there is more!
-            --  Check out: https://github.com/echasnovski/mini.nvim
+            --  Check out: https://github.com/nvim-mini/mini.nvim
         end,
     },
     { -- Highlight, edit, and navigate code
@@ -1133,7 +1132,7 @@ require('lazy').setup({
     },
     {
         'MeanderingProgrammer/render-markdown.nvim',
-        dependencies = { 'nvim-treesitter/nvim-treesitter', 'echasnovski/mini.nvim' }, -- if you use the mini.nvim suite
+        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
         ft = { 'markdown', 'codecompanion' },
         opts = {
             render_modes = true, -- enable rendering in all modes
