@@ -1,3 +1,6 @@
+-- IDEA: grab all TODOS, FIXES, IDEAS etc and store the in the quickfix list in the opened file
+-- controls the same as quickfix list, go over them and navigate to it on enter
+--
 --[[
 
 =====================================================================
