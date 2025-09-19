@@ -666,36 +666,6 @@ require('lazy').setup({
                 --
                 -- But for many setups, the LSP (`tsserver`) will work just fine
                 -- tsserver = {},
-                -- FIX: this is disabled because lspconfig does not have support for it yet
-                -- apex_ls = {
-                --   filetypes = {
-                --     'apexcode',
-                --     'apex',
-                --     'cls',
-                --     'trigger',
-                --   },
-                -- },
-                --
-                -- apex_ls = {
-                --   cmd = {
-                --     'java',
-                --     '-jar',
-                --     '--stdio',
-                --   },
-                --   filetypes = { 'apex' },
-                --   root_dir = require('lspconfig').util.root_pattern '.git',
-                -- },
-                --
-                -- apex_ls = {
-                --   cmd = {
-                --     'java',
-                --     '-jar',
-                --     vim.fn.expand '$HOME/lsp/Apex/apex-jorje-lsp.jar',
-                --     '--stdio',
-                --   },
-                --   filetypes = { 'apex' },
-                --   root_dir = require('lspconfig.util').root_pattern '.git',
-                -- },
 
                 lwc_ls = {
                     filetypes = {
@@ -1135,7 +1105,7 @@ require('lazy').setup({
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
         opts = {
-            ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'apex', 'javascript', 'css' },
+            ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'apex', 'javascript', 'css', 'zig' },
             -- Autoinstall languages that are not installed
             auto_install = true,
             highlight = {
