@@ -1,27 +1,7 @@
 -- IDEA: grab all TODOS, FIXES, IDEAS etc and store the in the quickfix list in the opened file
 -- controls the same as quickfix list, go over them and navigate to it on enter
---
---[[
 
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-  Next, run AND READ `:help`.
-    This will open up a help window with some basic information
-    about reading, navigating and searching the builtin help documentation.
-
-    This should be the first place you go to look when you're stuck or confused
-    with something. It's one of my favorite Neovim features.
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-  I have left several `:help X` comments throughout the init.lua
-    These are hints about where to find more information about the relevant settings,
-    plugins or Neovim features used in Kickstart.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
---]]
+--  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
 
 -- Set <space> as the leader key
 -- See `:help mapleader`
@@ -119,6 +99,40 @@ vim.filetype.add {
         ['component'] = 'component',
     },
 }
+
+-- Configure LSP clients
+vim.lsp.config('*', {
+    root_markers = { '.git' },
+})
+
+vim.lsp.config('lwc_ls', {
+    cmd = {
+        'lwc-language-server',
+        '--stdio',
+    },
+    filetypes = { 'javascript', 'html', 'component' },
+    init_options = {
+        embeddedLanguages = {
+            javascript = true,
+            html = true,
+        },
+    },
+    root_markers = { 'sfdx-project.json', 'package.json' },
+})
+
+vim.lsp.config('apex_ls', {
+    cmd = {
+        'java',
+        '-jar',
+        vim.fn.expand '$HOME/.local/share/nvim/mason/share/apex-language-server/apex-jorje-lsp.jar',
+        '--stdio',
+    },
+    filetypes = { 'apex', 'apexcode' },
+    root_markers = { 'sfdx-project.json' },
+})
+
+vim.lsp.enable 'lwc_ls'
+vim.lsp.enable 'apex_ls'
 
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -567,22 +581,12 @@ require('lazy').setup({
                 end,
             })
 
-            require('lspconfig').apex_ls.setup {
-                cmd = {
-                    'java',
-                    '-jar',
-                    vim.fn.expand '$HOME/.local/share/nvim/mason/share/apex-language-server/apex-jorje-lsp.jar',
-                    '--stdio',
-                },
-                filetypes = { 'apex' },
-                root_dir = require('lspconfig').util.root_pattern '.git',
-            }
-
             -- LSP servers and clients are able to communicate to each other what features they support.
             --  By default, Neovim doesn't support everything that is in the LSP specification.
             --  When you add nvim-cmp, luasnip, etc. Neovim now has *more* capabilities.
             --  So, we create new capabilities with nvim cmp, and then broadcast that to the servers.
-            local capabilities = require('blink.cmp').get_lsp_capabilities()
+            -- local capabilities = require('blink.cmp').get_lsp_capabilities()
+            local capabilities = vim.lsp.protocol.make_client_capabilities()
             local servers = {
                 -- clangd = {},
                 -- gopls = {},
@@ -596,19 +600,9 @@ require('lazy').setup({
                 -- But for many setups, the LSP (`tsserver`) will work just fine
                 -- tsserver = {},
 
-                lwc_ls = {
-                    filetypes = {
-                        'cmp',
-                        'html',
-                        'javascript',
-                        'xml',
-                        'css',
-                    },
-                },
-
-                visualforce_ls = {
-                    filetypes = { 'component' },
-                },
+                -- visualforce_ls = {
+                --     filetypes = { 'component' },
+                -- },
 
                 -- eslint = {},
 
@@ -659,7 +653,6 @@ require('lazy').setup({
                     end,
                 },
             }
-            -- require('lspconfig').apex_ls.setup(servers['apex_ls'])
         end,
     },
 
@@ -696,7 +689,7 @@ require('lazy').setup({
                 xml = { 'prettier' },
                 html = { 'prettier' },
                 json = { 'prettier' },
-                -- component = { 'prettier' },
+                markdown = { 'prettier' },
                 -- Conform can also run multiple formatters sequentially
                 -- python = { "isort", "black" },
                 --
@@ -704,16 +697,6 @@ require('lazy').setup({
                 -- is found.
                 -- javascript = { { "prettierd", "prettier" } },
             },
-            -- formatters = {
-            --   prettier = {
-            --     prepend_args = function(self, ctx)
-            --       if vim.endswith(ctx.filename, '.cls') or vim.endswith(ctx.filename, '.trigger') then
-            --         return { '--plugin', 'prettier-plugin-apex', '--write', '$FILENAME' }
-            --       end
-            --       return {}
-            --     end,
-            --   },
-            -- },
         },
     },
     { -- Autocompletion
@@ -740,8 +723,6 @@ require('lazy').setup({
             'folke/lazydev.nvim',
             'fang2hou/blink-copilot',
         },
-        --- @module 'blink.cmp'
-        --- @type blink.cmp.Config
         opts = {
             keymap = {
                 -- 'default' (recommended) for mappings similar to built-in completions
@@ -781,10 +762,16 @@ require('lazy').setup({
                 -- By default, you may press `<c-space>` to show the documentation.
                 -- Optionally, set `auto_show = true` to show the documentation after a delay.
                 documentation = { auto_show = true, auto_show_delay_ms = 500 },
+                list = {
+                    selection = {
+                        preselect = true,
+                        auto_insert = false,
+                    },
+                },
             },
 
             sources = {
-                default = { 'lsp', 'path', 'snippets', 'lazydev', 'copilot' },
+                default = { 'lsp', 'path', 'snippets', 'lazydev', 'buffer', 'cmdline', 'copilot' },
                 providers = {
                     lazydev = { module = 'lazydev.integrations.blink', score_offset = 100 },
                     copilot = {
@@ -798,13 +785,6 @@ require('lazy').setup({
 
             snippets = {},
 
-            -- Blink.cmp includes an optional, recommended rust fuzzy matcher,
-            -- which automatically downloads a prebuilt binary when enabled.
-            --
-            -- By default, we use the Lua implementation instead, but you may enable
-            -- the rust implementation via `'prefer_rust_with_warning'`
-            --
-            -- See :h blink-cmp-config-fuzzy for more information
             fuzzy = { implementation = 'prefer_rust' },
 
             -- Shows a signature help window while you type arguments for a function
@@ -1062,10 +1042,11 @@ require('lazy').setup({
     {
         'MeanderingProgrammer/render-markdown.nvim',
         dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
-        ft = { 'markdown', 'codecompanion' },
+        ft = { 'markdown' },
         opts = {
             render_modes = true, -- enable rendering in all modes
             sign = { enabled = false }, -- disable gutter signs
+            completions = { lsp = { enabled = true } },
         },
     },
     {
