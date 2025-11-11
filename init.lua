@@ -94,6 +94,7 @@ vim.filetype.add {
     extension = {
         ['cls'] = 'apex',
         ['trigger'] = 'apex',
+        ['apex'] = 'apex',
         ['cmp'] = 'html',
         ['page'] = 'html',
         ['component'] = 'component',
