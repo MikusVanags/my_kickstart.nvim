@@ -1,5 +1,6 @@
 -- IDEA: grab all TODOS, FIXES, IDEAS etc and store the in the quickfix list in the opened file
 -- controls the same as quickfix list, go over them and navigate to it on enter
+-- IDEA: have a search that combines grep + filepath search
 
 --  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
 
