@@ -148,12 +148,11 @@ vim.keymap.set('n', '<leader>e', '<cmd>Explore<CR>', { desc = '[E]xplore' })
 vim.keymap.set('n', '<leader>se', '<cmd>Sexplore!"<CR>', { desc = '[S]plit [E]xplore' })
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-vim.keymap.set('n', '<leader>tt', '<cmd>vsplit | terminal<CR>', { desc = '[TT]erminal' })
--- Alternative way for this
--- vim.keymap.set('n', '<leader>tt', function()
---   vim.cmd('vsplit')
---   vim.cmd('terminal')
--- end, { desc = '[TT]erminal' })
+vim.keymap.set('n', '<leader>tt', '<cmd>vsplit | terminal<CR>', { desc = '[tt]erminal' })
+vim.keymap.set('n', '<leader>tT', function()
+    vim.cmd 'tabnew'
+    vim.cmd 'terminal'
+end, { desc = '[T]ab [t]erminal' })
 
 -- vim.keymap.set('n', '<leader>un', function()
 --   require('notify').dismiss { silent = true, pending = true }
