@@ -814,8 +814,6 @@ require('lazy').setup({
         'rose-pine/neovim',
         priority = 1010,
         init = function()
-            -- vim.cmd.colorscheme 'rose-pine-moon'
-            -- vim.cmd.hi 'Comment gui=none'
             require('rose-pine').setup {
                 variant = 'auto', -- auto, main, moon, or dawn
                 dark_variant = 'moon', -- main, moon, or dawn
@@ -827,7 +825,7 @@ require('lazy').setup({
                 },
                 styles = {
                     bold = true,
-                    -- italic = true,
+                    italic = false,
                     transparency = true,
                 },
                 palette = {
