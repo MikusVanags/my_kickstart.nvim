@@ -154,10 +154,6 @@ vim.keymap.set('n', '<leader>tT', function()
     vim.cmd 'terminal'
 end, { desc = '[T]ab [t]erminal' })
 
--- vim.keymap.set('n', '<leader>un', function()
---   require('notify').dismiss { silent = true, pending = true }
--- end, { desc = 'Dismiss all notifications' })
-
 -- Keybinds to make split navigation easier.
 --  Use CTRL+<hjkl> to switch between windows
 --
@@ -1088,15 +1084,6 @@ require('lazy').setup({
             }
         end,
     },
-    -- Custom Notifications
-    -- {
-    --   'rcarriga/nvim-notify',
-    --   init = function()
-    --     require('notify').setup {
-    --       background_colour = '#000000',
-    --     }
-    --   end,
-    -- },
 
     require 'kickstart.plugins.debug',
     -- require 'kickstart.plugins.indent_line',
@@ -1118,7 +1105,6 @@ require('lazy').setup({
 
 -- vim.cmd.colorscheme 'rose-pine'
 vim.cmd.colorscheme 'rose-pine-moon'
--- vim.notify = require 'notify'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
