@@ -777,7 +777,7 @@ require('lazy').setup({
                     copilot = {
                         name = 'copilot',
                         module = 'blink-copilot',
-                        score_offset = 1000,
+                        score_offset = -1000,
                         async = true,
                     },
                 },
@@ -827,7 +827,7 @@ require('lazy').setup({
                 },
                 styles = {
                     bold = true,
-                    italic = true,
+                    -- italic = true,
                     transparency = true,
                 },
                 palette = {
@@ -854,7 +854,7 @@ require('lazy').setup({
                 -- dim_nc_background = false, -- dim 'non-current' window backgrounds
                 disable_background = true, -- disable background
                 -- disable_float_background = false, -- disable background for floats
-                -- disable_italics = false, -- disable italics
+                disable_italics = true, -- disable italics
             }
         end,
     },
@@ -875,12 +875,12 @@ require('lazy').setup({
                 dim_inactive = {
                     enabled = false, -- dims the background color of inactive window
                 },
-                no_italic = false, -- Force no italic
+                no_italic = true, -- Force no italic
                 no_bold = false, -- Force no bold
                 no_underline = false, -- Force no underline
                 styles = { -- Handles the styles of general hi groups (see `:h highlight-args`):
-                    comments = { 'italic' }, -- Change the style of comments
-                    conditionals = { 'italic' },
+                    comments = {}, -- Change the style of comments
+                    conditionals = {},
                     loops = {},
                     functions = {},
                     keywords = {},
@@ -908,11 +908,11 @@ require('lazy').setup({
                     native_lsp = {
                         enabled = true,
                         virtual_text = {
-                            errors = { 'italic' },
-                            hints = { 'italic' },
-                            warnings = { 'italic' },
-                            information = { 'italic' },
-                            ok = { 'italic' },
+                            errors = {},
+                            hints = {},
+                            warnings = {},
+                            information = {},
+                            ok = {},
                         },
                         underlines = {
                             errors = { 'underline' },
@@ -995,7 +995,13 @@ require('lazy').setup({
             --  and try some other statusline plugin
             local statusline = require 'mini.statusline'
             -- set use_icons to true if you have a Nerd Font
-            statusline.setup { use_icons = vim.g.have_nerd_font }
+            statusline.setup {
+                -- content = {
+                --     active = nil,
+                --     inactive = nil,
+                -- },
+                use_icons = vim.g.have_nerd_font,
+            }
 
             -- You can configure sections in the statusline by overriding their
             -- default behavior. For example, here we set the section for
@@ -1120,3 +1126,65 @@ vim.cmd.colorscheme 'rose-pine-moon'
 -- vim: ts=2 sts=2 sw=2 et
 vim.opt.tags = './tags,tags'
 vim.opt.tagfunc = 'v:lua.vim.lsp.tagfunc'
+
+-- Project runner: set command, auto-runs on save (silent background)
+local RunnerCmd = nil
+local RunnerJob = nil
+local function run_command()
+    if not RunnerCmd then
+        return
+    end
+
+    if RunnerJob then
+        pcall(vim.fn.jobstop, RunnerJob)
+    end
+    vim.fn.jobstart "pkill -f 'zig-out/bin' 2>/dev/null || true"
+
+    RunnerJob = vim.fn.jobstart(RunnerCmd, {
+        detach = true,
+        on_exit = function(_, code)
+            if code ~= 0 then
+                vim.notify('Build failed (exit ' .. code .. ')', vim.log.levels.ERROR)
+            end
+        end,
+    })
+end
+vim.keymap.set('n', '<leader>rm', function()
+    vim.ui.input({ prompt = 'Run command: ', default = RunnerCmd or 'zig build run' }, function(input)
+        if input then
+            RunnerCmd = input
+            vim.notify('Runner: ' .. input)
+        end
+    end)
+end, { desc = 'Set run command' })
+vim.keymap.set('n', '<leader>rr', function()
+    if not RunnerCmd then
+        vim.notify('No command set! Use <leader>rm first', vim.log.levels.WARN)
+        return
+    end
+    run_command()
+end, { desc = 'Run now' })
+vim.keymap.set('n', '<leader>rk', function()
+    if RunnerJob then
+        pcall(vim.fn.jobstop, RunnerJob)
+    end
+    vim.fn.jobstart "pkill -f 'zig-out/bin' 2>/dev/null || true"
+    RunnerCmd = nil
+    vim.notify 'Runner disabled'
+end, { desc = 'Kill & disable' })
+vim.api.nvim_create_autocmd('BufWritePost', {
+    pattern = '*.zig',
+    callback = function()
+        if RunnerCmd then
+            run_command()
+        end
+    end,
+})
+
+vim.keymap.set('n', '<leader>tt', function()
+    if vim.o.showtabline == 1 then
+        vim.o.showtabline = 0
+    else
+        vim.o.showtabline = 1
+    end
+end, { desc = '[t]oggle [t]abs' })
