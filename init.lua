@@ -822,18 +822,18 @@ require('lazy').setup({
                 styles = {
                     bold = true,
                     italic = false,
-                    transparency = true,
+                    transparency = false,
                 },
                 palette = {
-                    moon = {
-                        -- base = '#000000',
-                        -- overlay = '#000000',
-                        -- surface = '#000000',
-                        -- highlight_low = '#000000',
-                        -- highlight_med = '#000000',
-                        -- highlight_high = '#000000',
-                        -- highlight = '#000000',
-                    },
+                    -- moon = {
+                    --     -- base = '#000000',
+                    --     -- overlay = '#000000',
+                    --     -- surface = '#000000',
+                    --     -- highlight_low = '#000000',
+                    --     -- highlight_med = '#000000',
+                    --     -- highlight_high = '#000000',
+                    --     -- highlight = '#000000',
+                    -- },
                 },
             }
         end,
@@ -844,10 +844,10 @@ require('lazy').setup({
         priority = 1015,
         config = function()
             require('poimandres').setup {
-                -- bold_vert_split = false, -- use bold vertical separators
-                -- dim_nc_background = false, -- dim 'non-current' window backgrounds
-                disable_background = true, -- disable background
-                -- disable_float_background = false, -- disable background for floats
+                bold_vert_split = true, -- use bold vertical separators
+                dim_nc_background = true, -- dim 'non-current' window backgrounds
+                disable_background = false, -- disable background
+                disable_float_background = false, -- disable background for floats
                 disable_italics = true, -- disable italics
             }
         end,
@@ -863,7 +863,7 @@ require('lazy').setup({
                     light = 'latte',
                     dark = 'mocha',
                 },
-                transparent_background = true, -- disables setting the background color.
+                transparent_background = false, -- disables setting the background color.
                 show_end_of_buffer = true, -- shows the '~' characters after the end of buffers
                 term_colors = true, -- sets terminal colors (e.g. `g:terminal_color_0`)
                 dim_inactive = {
@@ -1104,7 +1104,7 @@ require('lazy').setup({
 })
 
 -- vim.cmd.colorscheme 'rose-pine'
-vim.cmd.colorscheme 'rose-pine-moon'
+require 'custom.colorscheme'
 
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
