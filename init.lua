@@ -1040,16 +1040,6 @@ require('lazy').setup({
         end,
     },
     {
-        'MeanderingProgrammer/render-markdown.nvim',
-        dependencies = { 'nvim-treesitter/nvim-treesitter', 'nvim-mini/mini.nvim' }, -- if you use the mini.nvim suite
-        ft = { 'markdown' },
-        opts = {
-            render_modes = true, -- enable rendering in all modes
-            sign = { enabled = false }, -- disable gutter signs
-            completions = { lsp = { enabled = true } },
-        },
-    },
-    {
         'github/copilot.vim',
         cmd = 'Copilot',
         event = 'BufWinEnter',

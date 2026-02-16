@@ -1,0 +1,5 @@
+GetStatusLine = function()
+    --
+end
+
+return {}

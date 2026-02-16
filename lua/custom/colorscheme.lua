@@ -2,7 +2,7 @@
 
 local ThemeToggle = { transparent = false, current = vim.g.colors_name or 'rose-pine-moon', updating = false }
 
-local state_file = vim.fn.stdpath('state') .. '/colorscheme_state.json'
+local state_file = vim.fn.stdpath 'state' .. '/colorscheme_state.json'
 
 local function load_state()
     local fd = io.open(state_file, 'r')
@@ -37,7 +37,7 @@ local function apply_theme_transparency(enable, opts)
     opts = opts or {}
     ThemeToggle.transparent = enable
 
-    local current = opts.current or vim.g.colors_name or ThemeToggle.current or 'rose-pine-moon'
+    local current = opts.current or vim.g.colors_name or ThemeToggle.current or 'rose-pine-main'
     ThemeToggle.current = current
 
     save_state { colorscheme = current, transparent = ThemeToggle.transparent }
@@ -51,7 +51,7 @@ local function apply_theme_transparency(enable, opts)
     if ok_rose then
         rose.setup {
             variant = 'auto',
-            dark_variant = 'moon',
+            dark_variant = 'main',
             extend_background_behind_borders = true,
             nable = {
                 terminal = true,
@@ -200,7 +200,7 @@ vim.api.nvim_create_autocmd('ColorScheme', {
 
 local function apply_startup_state()
     local state = load_state()
-    local scheme = state.colorscheme or 'rose-pine-moon'
+    local scheme = state.colorscheme or 'rose-pine-main'
     local transparent = state.transparent == true
 
     ThemeToggle.current = scheme
@@ -211,9 +211,9 @@ local function apply_startup_state()
     ThemeToggle.updating = false
 
     if not ok then
-        ThemeToggle.current = 'rose-pine-moon'
-        pcall(vim.cmd.colorscheme, 'rose-pine-moon')
-        save_state { colorscheme = 'rose-pine-moon', transparent = transparent }
+        ThemeToggle.current = 'rose-pine-main'
+        pcall(vim.cmd.colorscheme, 'rose-pine-main')
+        save_state { colorscheme = 'rose-pine-main', transparent = transparent }
     end
 
     apply_theme_transparency(transparent, { silent = true, current = ThemeToggle.current })
