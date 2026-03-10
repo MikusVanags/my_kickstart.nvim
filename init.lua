@@ -139,6 +139,42 @@ vim.lsp.enable 'apex_ls'
 -- Diagnostic keymaps
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
+-- Configure diagnostic display
+
+local function toggle_diagnostics()
+    local config = vim.diagnostic.config()
+    local current = config.virtual_text
+    if current then
+        vim.diagnostic.config { virtual_text = false }
+    else
+        vim.diagnostic.config {
+            virtual_text = {
+                source = 'if_many', -- Show source only if multiple diagnostics
+                prefix = '', -- Custom prefix character
+                spacing = 4, -- Space between code and diagnostic
+                severity = {
+                    min = vim.diagnostic.severity.WARN, -- Show warnings and errors only
+                },
+                format = function(diagnostic)
+                    -- Custom format: show severity icon and message
+                    local icons = {
+                        [vim.diagnostic.severity.ERROR] = ' ',
+                        [vim.diagnostic.severity.WARN] = ' ',
+                        [vim.diagnostic.severity.INFO] = ' ',
+                        [vim.diagnostic.severity.HINT] = ' ',
+                    }
+                    return icons[diagnostic.severity] .. diagnostic.message
+                end,
+            },
+            signs = true, -- Keep gutter signs
+            underline = true, -- Keep underline styling
+            update_in_insert = false, -- Don't update while typing
+            severity_sort = true, -- Sort by severity
+        }
+    end
+end
+vim.keymap.set('n', '<leader>td', toggle_diagnostics, { desc = '[T]oggle [D]iagnostics' })
+
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
 vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
@@ -204,6 +240,7 @@ end
 --
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
+    require 'plugins.dankcolors',
     -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
     'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
@@ -399,6 +436,59 @@ require('lazy').setup({
             end, { desc = '[S]earch [N]eovim files' })
         end,
     },
+    {
+        'dmtrKovalenko/fff.nvim',
+        build = function()
+            -- this will download prebuild binary or try to use existing rustup toolchain to build from source
+            -- (if you are using lazy you can use gb for rebuilding a plugin if needed)
+            require('fff.download').download_or_build_binary()
+        end,
+        -- if you are using nixos
+        -- build = "nix run .#release",
+        opts = { -- (optional)
+            debug = {
+                enabled = true, -- we expect your collaboration at least during the beta
+                show_scores = true, -- to help us optimize the scoring system, feel free to share your scores!
+            },
+        },
+        -- No need to lazy-load with lazy.nvim.
+        -- This plugin initializes itself lazily.
+        lazy = false,
+        keys = {
+            {
+                'ff', -- try it if you didn't it is a banger keybinding for a picker
+                function()
+                    require('fff').find_files()
+                end,
+                desc = 'FFFind files',
+            },
+            {
+                'fg',
+                function()
+                    require('fff').live_grep()
+                end,
+                desc = 'LiFFFe grep',
+            },
+            {
+                'fz',
+                function()
+                    require('fff').live_grep {
+                        grep = {
+                            modes = { 'fuzzy', 'plain' },
+                        },
+                    }
+                end,
+                desc = 'Live fffuzy grep',
+            },
+            {
+                'fc',
+                function()
+                    require('fff').live_grep { query = vim.fn.expand '<cword>' }
+                end,
+                desc = 'Search current word',
+            },
+        },
+    },
 
     -- LSP Configuration & Plugins
     {
@@ -532,9 +622,6 @@ require('lazy').setup({
                     -- Opens a popup that displays documentation about the word under your cursor
                     --  See `:help K` for why this keymap.
                     map('K', vim.lsp.buf.hover, 'Hover Documentation')
-
-                    -- WARN: This is not Goto Definition, this is Goto Declaration.
-                    --  For example, in C this would take you to the header.
                     map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
                     local function client_supports_method(client, method, bufnr)
@@ -543,7 +630,7 @@ require('lazy').setup({
 
                     local client = vim.lsp.get_client_by_id(event.data.client_id)
                     if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-                        local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false })
+                        local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = true })
                         vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
                             buffer = event.buf,
                             group = highlight_augroup,
@@ -612,7 +699,7 @@ require('lazy').setup({
                                 callSnippet = 'Replace',
                             },
                             -- You can toggle below to ignore Lua_LS's noisy `missing-fields` warnings
-                            -- diagnostics = { disable = { 'missing-fields' } },
+                            diagnostics = { disable = { 'missing-fields' } },
                         },
                     },
                 },
@@ -685,7 +772,7 @@ require('lazy').setup({
                 xml = { 'prettier' },
                 html = { 'prettier' },
                 json = { 'prettier' },
-                markdown = { 'prettier' },
+                -- markdown = { 'prettier' },
                 -- Conform can also run multiple formatters sequentially
                 -- python = { "isort", "black" },
                 --
@@ -895,7 +982,7 @@ require('lazy').setup({
                     gitsigns = true,
                     nvimtree = true,
                     treesitter = true,
-                    -- notify = true,
+                    notify = true,
                     mason = true,
                     dap = true,
                     which_key = true,
@@ -943,6 +1030,72 @@ require('lazy').setup({
                 idea = { '#6bb300' },
             },
         },
+    },
+    {
+        'nickjvandyke/opencode.nvim',
+        version = '*', -- Latest stable release
+        dependencies = {
+            {
+                -- `snacks.nvim` integration is recommended, but optional
+                ---@module "snacks" <- Loads `snacks.nvim` types for configuration intellisense
+                'folke/snacks.nvim',
+                optional = true,
+                opts = {
+                    input = {}, -- Enhances `ask()`
+                    picker = { -- Enhances `select()`
+                        actions = {
+                            opencode_send = function(...)
+                                return require('opencode').snacks_picker_send(...)
+                            end,
+                        },
+                        win = {
+                            input = {
+                                keys = {
+                                    ['<a-a>'] = { 'opencode_send', mode = { 'n', 'i' } },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+        },
+        config = function()
+            ---@type opencode.Opts
+            vim.g.opencode_opts = {
+                -- Your configuration, if any; goto definition on the type or field for details
+            }
+
+            vim.o.autoread = true -- Required for `opts.events.reload`
+
+            -- Recommended/example keymaps
+            vim.keymap.set({ 'n', 'x' }, '<C-a>', function()
+                require('opencode').ask('@this: ', { submit = true })
+            end, { desc = 'Ask opencode…' })
+            vim.keymap.set({ 'n', 'x' }, '<C-x>', function()
+                require('opencode').select()
+            end, { desc = 'Execute opencode action…' })
+            vim.keymap.set({ 'n', 't' }, '<C-.>', function()
+                require('opencode').toggle()
+            end, { desc = 'Toggle opencode' })
+
+            vim.keymap.set({ 'n', 'x' }, 'go', function()
+                return require('opencode').operator '@this '
+            end, { desc = 'Add range to opencode', expr = true })
+            vim.keymap.set('n', 'goo', function()
+                return require('opencode').operator '@this ' .. '_'
+            end, { desc = 'Add line to opencode', expr = true })
+
+            vim.keymap.set('n', '<S-C-u>', function()
+                require('opencode').command 'session.half.page.up'
+            end, { desc = 'Scroll opencode up' })
+            vim.keymap.set('n', '<S-C-d>', function()
+                require('opencode').command 'session.half.page.down'
+            end, { desc = 'Scroll opencode down' })
+
+            -- You may want these if you use the opinionated `<C-a>` and `<C-x>` keymaps above — otherwise consider `<leader>o…` (and remove terminal mode from the `toggle` keymap)
+            vim.keymap.set('n', '+', '<C-a>', { desc = 'Increment under cursor', noremap = true })
+            vim.keymap.set('n', '-', '<C-x>', { desc = 'Decrement under cursor', noremap = true })
+        end,
     },
     -- {
     --     'lunarVim/bigfile.nvim',
