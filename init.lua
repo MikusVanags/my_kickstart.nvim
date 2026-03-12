@@ -1070,13 +1070,13 @@ require('lazy').setup({
             vim.o.autoread = true -- Required for `opts.events.reload`
 
             -- Recommended/example keymaps
-            vim.keymap.set({ 'n', 'x' }, '<C-a>', function()
+            vim.keymap.set({ 'n', 'x' }, '<leader>a', function()
                 require('opencode').ask('@this: ', { submit = true })
             end, { desc = 'Ask opencode…' })
-            vim.keymap.set({ 'n', 'x' }, '<C-x>', function()
+            vim.keymap.set({ 'n', 'x' }, '<leader>x', function()
                 require('opencode').select()
             end, { desc = 'Execute opencode action…' })
-            vim.keymap.set({ 'n', 't' }, '<C-.>', function()
+            vim.keymap.set({ 'n', 't' }, '<leader>.', function()
                 require('opencode').toggle()
             end, { desc = 'Toggle opencode' })
 
@@ -1311,7 +1311,7 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 })
 
 -- Toggle memory module for persistent toggle states
-require('custom.toggle_memory')
+require 'custom.toggle_memory'
 
 -- Remove old tab toggle keymap since it's now handled by toggle_memory
 -- vim.keymap.set('n', '<leader>tt', function()
