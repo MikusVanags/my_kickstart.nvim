@@ -140,40 +140,41 @@ vim.lsp.enable 'apex_ls'
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Configure diagnostic display
+-- Diagnostics toggle is now handled by toggle_memory module
 
-local function toggle_diagnostics()
-    local config = vim.diagnostic.config()
-    local current = config.virtual_text
-    if current then
-        vim.diagnostic.config { virtual_text = false }
-    else
-        vim.diagnostic.config {
-            virtual_text = {
-                source = 'if_many', -- Show source only if multiple diagnostics
-                prefix = '', -- Custom prefix character
-                spacing = 4, -- Space between code and diagnostic
-                severity = {
-                    min = vim.diagnostic.severity.WARN, -- Show warnings and errors only
-                },
-                format = function(diagnostic)
-                    -- Custom format: show severity icon and message
-                    local icons = {
-                        [vim.diagnostic.severity.ERROR] = ' ',
-                        [vim.diagnostic.severity.WARN] = ' ',
-                        [vim.diagnostic.severity.INFO] = ' ',
-                        [vim.diagnostic.severity.HINT] = ' ',
-                    }
-                    return icons[diagnostic.severity] .. diagnostic.message
-                end,
-            },
-            signs = true, -- Keep gutter signs
-            underline = true, -- Keep underline styling
-            update_in_insert = false, -- Don't update while typing
-            severity_sort = true, -- Sort by severity
-        }
-    end
-end
-vim.keymap.set('n', '<leader>td', toggle_diagnostics, { desc = '[T]oggle [D]iagnostics' })
+-- local function toggle_diagnostics()
+--     local config = vim.diagnostic.config()
+--     local current = config.virtual_text
+--     if current then
+--         vim.diagnostic.config { virtual_text = false }
+--     else
+--         vim.diagnostic.config {
+--             virtual_text = {
+--                 source = 'if_many', -- Show source only if multiple diagnostics
+--                 prefix = '', -- Custom prefix character
+--                 spacing = 4, -- Space between code and diagnostic
+--                 severity = {
+--                     min = vim.diagnostic.severity.WARN, -- Show warnings and errors only
+--                 },
+--                 format = function(diagnostic)
+--                     -- Custom format: show severity icon and message
+--                     local icons = {
+--                         [vim.diagnostic.severity.ERROR] = ' ',
+--                         [vim.diagnostic.severity.WARN] = ' ',
+--                         [vim.diagnostic.severity.INFO] = ' ',
+--                         [vim.diagnostic.severity.HINT] = ' ',
+--                     }
+--                     return icons[diagnostic.severity] .. diagnostic.message
+--                 end,
+--             },
+--             signs = true, -- Keep gutter signs
+--             underline = true, -- Keep underline styling
+--             update_in_insert = false, -- Don't update while typing
+--             severity_sort = true, -- Sort by severity
+--         }
+--     end
+-- end
+-- vim.keymap.set('n', '<leader>td', toggle_diagnostics, { desc = '[T]oggle [D]iagnostics' })
 
 vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -656,11 +657,12 @@ require('lazy').setup({
                     -- code, if the language server you are using supports them
                     --
                     -- This may be unwanted, since they displace some of your code
-                    if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
-                        map('<leader>th', function()
-                            vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
-                        end, '[T]oggle Inlay [H]ints')
-                    end
+                    -- Inlay hints toggle is now handled by toggle_memory module
+                    -- if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_inlayHint, event.buf) then
+                    --     map('<leader>th', function()
+                    --         vim.lsp.inlay_hint.enable(not vim.lsp.inlay_hint.is_enabled { bufnr = event.buf })
+                    --     end, '[T]oggle Inlay [H]ints')
+                    -- end
                 end,
             })
 
@@ -1308,10 +1310,14 @@ vim.api.nvim_create_autocmd('BufWritePost', {
     end,
 })
 
-vim.keymap.set('n', '<leader>tt', function()
-    if vim.o.showtabline == 1 then
-        vim.o.showtabline = 0
-    else
-        vim.o.showtabline = 1
-    end
-end, { desc = '[t]oggle [t]abs' })
+-- Toggle memory module for persistent toggle states
+require('custom.toggle_memory')
+
+-- Remove old tab toggle keymap since it's now handled by toggle_memory
+-- vim.keymap.set('n', '<leader>tt', function()
+--     if vim.o.showtabline == 1 then
+--         vim.o.showtabline = 0
+--     else
+--         vim.o.showtabline = 1
+--     end
+-- end, { desc = '[t]oggle [t]abs' })
