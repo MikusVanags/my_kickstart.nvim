@@ -285,6 +285,15 @@ require('lazy').setup({
     {
         'https://tpope.io/vim/fugitive.git',
     },
+    {
+        'nicolasgb/jj.nvim',
+        version = '*', -- Use latest stable release
+        -- Or from the main branch (uncomment the branch line and comment the version line)
+        -- branch = "main",
+        config = function()
+            require('jj').setup {}
+        end,
+    },
 
     -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
     --
