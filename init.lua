@@ -32,6 +32,9 @@ vim.o.mouse = 'a'
 -- Don't show the mode, since it's already in the status line
 vim.o.showmode = false
 
+vim.o.autoread = true
+vim.api.nvim_create_autocmd({ 'BufEnter', 'FocusGained', 'CursorHold', 'CursorHoldI' }, { pattern = '*', command = 'silent checktime' })
+
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
@@ -200,6 +203,26 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { desc = 'Move focus to the left wind
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right window' })
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
+
+vim.keymap.set('n', '<leader>g', function()
+    vim.cmd '$argadd %'
+    vim.cmd 'argdedup'
+end, { desc = 'Arg Grab' })
+vim.keymap.set('n', '<leader>1', function()
+    vim.cmd 'silent! 1argument'
+end, { desc = 'Arg Get 1' })
+vim.keymap.set('n', '<leader>2', function()
+    vim.cmd 'silent! 2argument'
+end, { desc = 'Arg Get 2' })
+vim.keymap.set('n', '<leader>3', function()
+    vim.cmd 'silent! 3argument'
+end, { desc = 'Arg Get 3' })
+vim.keymap.set('n', '<leader>4', function()
+    vim.cmd 'silent! 4argument'
+end, { desc = 'Arg Get 4' })
+vim.keymap.set('n', '<leader>5', function()
+    vim.cmd 'silent! 5argument'
+end, { desc = 'Arg Get 5' })
 
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
@@ -771,7 +794,7 @@ require('lazy').setup({
                 -- Disable "format_on_save lsp_fallback" for languages that don't
                 -- have a well standardized coding style. You can add additional
                 -- languages here or re-enable it for the disabled ones.
-                local disable_filetypes = { c = true, cpp = true }
+                local disable_filetypes = { c = true, cpp = true, zig = true }
                 return {
                     timeout_ms = 500,
                     lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
@@ -1077,8 +1100,6 @@ require('lazy').setup({
             vim.g.opencode_opts = {
                 -- Your configuration, if any; goto definition on the type or field for details
             }
-
-            vim.o.autoread = true -- Required for `opts.events.reload`
 
             -- Recommended/example keymaps
             vim.keymap.set({ 'n', 'x' }, '<leader>a', function()
