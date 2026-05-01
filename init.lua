@@ -118,10 +118,10 @@ vim.lsp.config('lwc_ls', {
     },
     filetypes = { 'javascript', 'html', 'component' },
     init_options = {
-        embeddedLanguages = {
-            javascript = true,
-            html = true,
-        },
+        -- embeddedLanguages = {
+        --     javascript = true,
+        --     html = true,
+        -- },
     },
     root_markers = { 'sfdx-project.json', 'package.json' },
 })
@@ -506,7 +506,10 @@ require('mason-lspconfig').setup {
     automatic_installation = false,
     handlers = {
         function(server_name)
-            local server = servers[server_name] or {}
+            local server = servers[server_name]
+            if not server then
+                return
+            end
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
         end,
