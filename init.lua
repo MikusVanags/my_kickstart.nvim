@@ -616,16 +616,15 @@ statusline.section_location = function()
     return '%2l:%-2v'
 end
 
--- nvim-treesitter
-require('nvim-treesitter').setup {
-    ensure_installed = { 'bash', 'c', 'html', 'lua', 'luadoc', 'markdown', 'vim', 'vimdoc', 'apex', 'javascript', 'css', 'zig' },
-    auto_install = true,
-    highlight = {
-        enable = true,
-        additional_vim_regex_highlighting = { 'ruby' },
-    },
-    indent = { enable = true, disable = { 'ruby' } },
-}
+-- nvim-treesitter (parser management only)
+require('nvim-treesitter').setup {}
+
+-- Enable treesitter highlighting for all buffers with parsers
+vim.api.nvim_create_autocmd('FileType', {
+    callback = function(ev)
+        pcall(vim.treesitter.start, ev.buf)
+    end,
+})
 
 -- copilot.vim
 vim.g.copilot_no_maps = true
@@ -654,7 +653,7 @@ vim.g.fff = {
 }
 
 -- Build fff Rust binary on first install only
-local fff_so = vim.fn.stdpath('data') .. '/site/pack/core/opt/fff.nvim/target/release/libfff_nvim.so'
+local fff_so = vim.fn.stdpath 'data' .. '/site/pack/core/opt/fff.nvim/target/release/libfff_nvim.so'
 if not vim.uv.fs_stat(fff_so) then
     vim.schedule(function()
         require('fff.download').download_or_build_binary()
