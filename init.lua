@@ -324,9 +324,6 @@ vim.pack.add({
 
     -- Linting
     'https://github.com/mfussenegger/nvim-lint',
-
-    -- AI
-    'https://github.com/nickjvandyke/opencode.nvim',
 }, { load = false })
 
 -- Plugin setups
@@ -583,32 +580,6 @@ require('todo-comments').setup {
     },
 }
 
--- opencode.nvim
-vim.g.opencode_opts = {}
-vim.keymap.set({ 'n', 'x' }, '<leader>a', function()
-    require('opencode').ask('@this: ', { submit = true })
-end, { desc = 'Ask opencode…' })
-vim.keymap.set({ 'n', 'x' }, '<leader>x', function()
-    require('opencode').select()
-end, { desc = 'Execute opencode action…' })
-vim.keymap.set({ 'n', 't' }, '<leader>.', function()
-    require('opencode').toggle()
-end, { desc = 'Toggle opencode' })
-vim.keymap.set({ 'n', 'x' }, 'go', function()
-    return require('opencode').operator '@this '
-end, { desc = 'Add range to opencode', expr = true })
-vim.keymap.set('n', 'goo', function()
-    return require('opencode').operator '@this ' .. '_'
-end, { desc = 'Add line to opencode', expr = true })
-vim.keymap.set('n', '<S-C-u>', function()
-    require('opencode').command 'session.half.page.up'
-end, { desc = 'Scroll opencode up' })
-vim.keymap.set('n', '<S-C-d>', function()
-    require('opencode').command 'session.half.page.down'
-end, { desc = 'Scroll opencode down' })
-vim.keymap.set('n', '+', '<C-a>', { desc = 'Increment under cursor', noremap = true })
-vim.keymap.set('n', '-', '<C-x>', { desc = 'Decrement under cursor', noremap = true })
-
 -- mini.nvim
 require('mini.ai').setup { n_lines = 500 }
 require('mini.surround').setup()
@@ -861,3 +832,4 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 
 -- Toggle memory module for persistent toggle states
 require 'custom.toggle_memory'
+require 'custom.zig'
