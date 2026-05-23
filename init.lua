@@ -289,7 +289,7 @@ vim.pack.add({
     'https://github.com/nvim-mini/mini.nvim',
     'https://github.com/NvChad/nvim-colorizer.lua',
     'https://github.com/nicolasgb/jj.nvim',
-    'https://github.com/github/copilot.vim',
+    -- 'https://github.com/github/copilot.vim',
     { src = 'https://github.com/dmtrKovalenko/fff.nvim', version = 'v0.5.1' },
     'https://github.com/stevearc/conform.nvim',
 
@@ -310,7 +310,7 @@ vim.pack.add({
     -- Completion
     { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range '1.*' },
     { src = 'https://github.com/L3MON4D3/LuaSnip', version = vim.version.range '2.*' },
-    'https://github.com/fang2hou/blink-copilot',
+    -- 'https://github.com/fang2hou/blink-copilot',
 
     -- Treesitter
     'https://github.com/nvim-treesitter/nvim-treesitter',
@@ -554,14 +554,15 @@ require('blink.cmp').setup {
         },
     },
     sources = {
-        default = { 'lsp', 'path', 'snippets', 'buffer', 'cmdline', 'copilot' },
+        default = { 'lsp', 'path', 'snippets', 'buffer', 'cmdline' },
+        --, 'copilot' },
         providers = {
-            copilot = {
-                name = 'copilot',
-                module = 'blink-copilot',
-                score_offset = -1000,
-                async = true,
-            },
+            -- copilot = {
+            --     name = 'copilot',
+            --     module = 'blink-copilot',
+            --     score_offset = -1000,
+            --     async = true,
+            -- },
         },
     },
     snippets = {},
@@ -601,15 +602,15 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 -- copilot.vim
-vim.g.copilot_no_maps = true
-vim.api.nvim_create_augroup('github_copilot', { clear = true })
-vim.api.nvim_create_autocmd({ 'FileType', 'BufUnload' }, {
-    group = 'github_copilot',
-    callback = function(args)
-        vim.fn['copilot#On' .. args.event]()
-    end,
-})
-vim.fn['copilot#OnFileType']()
+-- vim.g.copilot_no_maps = true
+-- vim.api.nvim_create_augroup('github_copilot', { clear = true })
+-- vim.api.nvim_create_autocmd({ 'FileType', 'BufUnload' }, {
+--     group = 'github_copilot',
+--     callback = function(args)
+--         vim.fn['copilot#On' .. args.event]()
+--     end,
+-- })
+-- vim.fn['copilot#OnFileType']()
 
 -- nvim-colorizer
 require('colorizer').setup {
