@@ -13,7 +13,7 @@ vim.lsp.config('lwc_ls', {
     },
     filetypes = { 'javascript', 'html', 'component' },
     init_options = {},
-    root_markers = { 'sfdx-project.json', 'package.json' },
+    root_markers = { 'sfdx-project.json' },
 })
 vim.lsp.enable 'lwc_ls'
 
@@ -53,6 +53,18 @@ vim.lsp.config('lua_ls', {
     },
 })
 vim.lsp.enable 'lua_ls'
+
+-- TypeScript Language Server
+vim.lsp.config('ts_ls', {
+    cmd = { 'typescript-language-server', '--stdio' },
+    filetypes = { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' },
+    root_markers = { 'package.json', 'tsconfig.json', '.git' },
+    settings = {
+        javascript = { inlayHints = { includeInlayEnumMemberValueHints = true } },
+        typescript = { inlayHints = { includeInlayEnumMemberValueHints = true } },
+    },
+})
+vim.lsp.enable 'ts_ls'
 
 -- Diagnostic quickfix
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
@@ -122,5 +134,5 @@ vim.api.nvim_create_autocmd('LspAttach', {
 -- Mason (package manager for LSP servers, formatters, linters)
 require('mason').setup()
 require('mason-tool-installer').setup {
-    ensure_installed = { 'lua-language-server', 'stylua', 'prettier' },
+    ensure_installed = { 'lua-language-server', 'typescript-language-server', 'stylua', 'prettier' },
 }
