@@ -106,43 +106,6 @@ vim.filetype.add {
     },
 }
 
--- Configure LSP clients
-vim.lsp.config('*', {
-    root_markers = { '.git' },
-})
-
-vim.lsp.config('lwc_ls', {
-    cmd = {
-        'lwc-language-server',
-        '--stdio',
-    },
-    filetypes = { 'javascript', 'html', 'component' },
-    init_options = {
-        -- embeddedLanguages = {
-        --     javascript = true,
-        --     html = true,
-        -- },
-    },
-    root_markers = { 'sfdx-project.json', 'package.json' },
-})
-
-vim.lsp.config('apex_ls', {
-    cmd = {
-        'java',
-        '-jar',
-        vim.fn.expand '$HOME/.local/share/nvim/mason/share/apex-language-server/apex-jorje-lsp.jar',
-        '--stdio',
-    },
-    filetypes = { 'apex', 'apexcode' },
-    root_markers = { 'sfdx-project.json' },
-})
-
-vim.lsp.enable 'lwc_ls'
-vim.lsp.enable 'apex_ls'
-
--- Diagnostic keymaps
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
-
 -- Configure diagnostic display
 -- Diagnostics toggle is now handled by toggle_memory module
 
@@ -295,9 +258,7 @@ vim.pack.add({
     { src = 'https://github.com/nvim-telescope/telescope.nvim', version = '0.1.x' },
 
     -- LSP
-    'https://github.com/neovim/nvim-lspconfig',
     'https://github.com/mason-org/mason.nvim',
-    'https://github.com/mason-org/mason-lspconfig.nvim',
     'https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim',
     'https://github.com/j-hui/fidget.nvim',
     'https://github.com/folke/lazydev.nvim',
@@ -322,6 +283,9 @@ vim.pack.add({
 }, { load = false })
 
 -- Plugin setups
+
+-- LSP
+require 'custom.lsp'
 
 -- Comment.nvim
 require('Comment').setup {}
@@ -408,103 +372,6 @@ end, { desc = '[S]earch [N]eovim files' })
 require('lazydev').setup {
     library = {
         { path = '${3rd}/luv/library', words = { 'vim%.uv' } },
-    },
-}
-
--- LSP
-vim.api.nvim_create_autocmd('LspAttach', {
-    group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
-    callback = function(event)
-        local map = function(keys, func, desc, mode)
-            mode = mode or 'n'
-            vim.keymap.set(mode, keys, func, { buffer = event.buf, desc = 'LSP: ' .. desc })
-        end
-
-        map('gd', function()
-            local clients = vim.lsp.get_active_clients { bufnr = 0 }
-            local has_definition_support = false
-            for _, client in ipairs(clients) do
-                if client.server_capabilities.definitionProvider then
-                    has_definition_support = true
-                    break
-                end
-            end
-            if has_definition_support then
-                local result = vim.lsp.buf_request_sync(0, 'textDocument/definition', vim.lsp.util.make_position_params(), 1000)
-                if result and result[1] and result[1].result and #result[1].result > 0 then
-                    vim.lsp.buf.definition()
-                    return
-                end
-            end
-            vim.cmd [[silent! execute "normal! \<C-]>"]]
-        end, '[G]oto [D]efinition')
-
-        map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
-        map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
-        map('<leader>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
-        map('<leader>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
-        map('<leader>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
-        map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
-        map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction')
-        map('K', vim.lsp.buf.hover, 'Hover Documentation')
-        map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-
-        local function client_supports_method(client, method, bufnr)
-            return client:supports_method(method, bufnr)
-        end
-
-        local client = vim.lsp.get_client_by_id(event.data.client_id)
-        if client and client_supports_method(client, vim.lsp.protocol.Methods.textDocument_documentHighlight, event.buf) then
-            local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = true })
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, {
-                buffer = event.buf,
-                group = highlight_augroup,
-                callback = vim.lsp.buf.document_highlight,
-            })
-            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' }, {
-                buffer = event.buf,
-                group = highlight_augroup,
-                callback = vim.lsp.buf.clear_references,
-            })
-            vim.api.nvim_create_autocmd('LspDetach', {
-                group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
-                callback = function(event2)
-                    vim.lsp.buf.clear_references()
-                    vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = event2.buf }
-                end,
-            })
-        end
-    end,
-})
-
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-local servers = {
-    lua_ls = {
-        settings = {
-            Lua = {
-                completion = { callSnippet = 'Replace' },
-                diagnostics = { disable = { 'missing-fields' } },
-            },
-        },
-    },
-}
-
-require('mason').setup()
-local ensure_installed = vim.tbl_keys(servers or {})
-vim.list_extend(ensure_installed, { 'stylua', 'prettier' })
-require('mason-tool-installer').setup { ensure_installed = ensure_installed }
-require('mason-lspconfig').setup {
-    ensure_installed = {},
-    automatic_installation = false,
-    handlers = {
-        function(server_name)
-            local server = servers[server_name]
-            if not server then
-                return
-            end
-            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-            require('lspconfig')[server_name].setup(server)
-        end,
     },
 }
 
