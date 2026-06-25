@@ -5,17 +5,26 @@ vim.lsp.config('*', {
     root_markers = { '.git' },
 })
 
--- LWC Language Server
-vim.lsp.config('lwc_ls', {
-    cmd = {
-        'lwc-language-server',
-        '--stdio',
+vim.lsp.config('html', {
+    cmd = { 'vscode-html-language-server', '--stdio' },
+    filetypes = { 'html' },
+    root_markers = { '.git' },
+    settings = {
+        css = {},
+        html = {},
     },
-    filetypes = { 'javascript', 'html', 'component' },
-    init_options = {},
-    root_markers = { 'sfdx-project.json' },
 })
-vim.lsp.enable 'lwc_ls'
+vim.lsp.enable 'html'
+
+vim.lsp.config('lwc', {
+    cmd = { 'lwc-language-server', '--stdio' },
+    filetypes = { 'html', 'css', 'javascript' },
+    root_markers = { 'sfdx-project.json' },
+    init_options = {
+        workspaceType = 'SFDX',
+    },
+})
+vim.lsp.enable 'lwc'
 
 -- Apex Language Server
 vim.lsp.config('apex_ls', {

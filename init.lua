@@ -100,6 +100,8 @@ vim.filetype.add {
         ['cls'] = 'apex',
         ['trigger'] = 'apex',
         ['apex'] = 'apex',
+        ['soql'] = 'soql',
+        ['sosl'] = 'sosl',
         ['cmp'] = 'html',
         ['page'] = 'html',
         ['component'] = 'component',
@@ -417,8 +419,15 @@ require('blink.cmp').setup {
     },
     sources = {
         default = { 'lsp', 'path', 'snippets', 'buffer', 'cmdline' },
-        --, 'copilot' },
+        per_filetype = {
+            soql = { 'soql' },
+            sosl = { 'soql' },
+        },
         providers = {
+            soql = {
+                name = 'soql',
+                module = 'custom.blink_soql',
+            },
             -- copilot = {
             --     name = 'copilot',
             --     module = 'blink-copilot',
@@ -691,3 +700,4 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 -- Toggle memory module for persistent toggle states
 require 'custom.toggle_memory'
 require 'custom.zig'
+require 'custom.sf_apex'
