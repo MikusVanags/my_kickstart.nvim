@@ -27,6 +27,16 @@ vim.lsp.config('apex_ls', {
     },
     filetypes = { 'apex' },
     root_markers = { 'sfdx-project.json' },
+    handlers = {
+        ['textDocument/publishDiagnostics'] = function(err, result, ctx, config)
+            local bufnr = vim.uri_to_bufnr(result.uri)
+            local ft = vim.bo[bufnr].filetype
+            if ft ~= 'apex' then
+                return
+            end
+            vim.lsp.diagnostic.on_publish_diagnostics(err, result, ctx, config)
+        end,
+    },
 })
 vim.lsp.enable 'apex_ls'
 
