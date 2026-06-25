@@ -258,11 +258,6 @@ vim.api.nvim_create_autocmd('PackChanged', {
             require('fff.download').download_or_build_binary()
         elseif name == 'telescope-fzf-native.nvim' and vim.fn.executable 'make' == 1 then
             vim.system({ 'make' }, { cwd = ev.data.path })
-        elseif name == 'nvim-treesitter' then
-            if not ev.data.active then
-                vim.cmd.packadd 'nvim-treesitter'
-            end
-            vim.cmd 'TSUpdate'
         elseif name == 'LuaSnip' and vim.fn.executable 'make' == 1 and not vim.fn.has 'win32' then
             vim.system({ 'make', 'install_jsregexp' }, { cwd = ev.data.path })
         end
@@ -313,7 +308,7 @@ vim.pack.add({
     -- 'https://github.com/fang2hou/blink-copilot',
 
     -- Treesitter
-    'https://github.com/nvim-treesitter/nvim-treesitter',
+    'https://github.com/romus204/tree-sitter-manager.nvim',
 
     -- Debugging
     'https://github.com/mfussenegger/nvim-dap',
@@ -570,6 +565,11 @@ require('blink.cmp').setup {
     signature = { enabled = true },
 }
 
+-- Treesitter: parser manager
+require('tree-sitter-manager').setup {
+    ensure_installed = { 'apex', 'bash', 'html', 'javascript', 'soql', 'sosl', 'typescript', 'zig' },
+}
+
 -- todo-comments
 require('todo-comments').setup {
     signs = true,
@@ -590,16 +590,6 @@ statusline.setup { use_icons = vim.g.have_nerd_font }
 statusline.section_location = function()
     return '%2l:%-2v'
 end
-
--- nvim-treesitter (parser management only)
-require('nvim-treesitter').setup {}
-
--- Enable treesitter highlighting for all buffers with parsers
-vim.api.nvim_create_autocmd('FileType', {
-    callback = function(ev)
-        pcall(vim.treesitter.start, ev.buf)
-    end,
-})
 
 -- copilot.vim
 -- vim.g.copilot_no_maps = true
