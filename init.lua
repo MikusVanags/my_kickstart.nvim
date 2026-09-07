@@ -203,10 +203,9 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
-local projectfile = io.open(vim.fn.getcwd() .. '/project.godot', 'r')
-if projectfile then
-    io.close(projectfile)
-    vim.fn.serverstart '/tmp/godot.pipe'
+-- Start the Godot editor server socket only when in a Godot project
+if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then
+    require 'custom.godot'
 end
 
 -- PackChanged hooks (must be before vim.pack.add to catch install events)
@@ -244,7 +243,6 @@ vim.pack.add({
     'https://github.com/lewis6991/gitsigns.nvim',
     'https://github.com/folke/which-key.nvim',
     'https://github.com/folke/todo-comments.nvim',
-    'https://github.com/nvim-tree/nvim-web-devicons',
     'https://github.com/nvim-mini/mini.nvim',
     'https://github.com/NvChad/nvim-colorizer.lua',
     'https://github.com/nicolasgb/jj.nvim',
@@ -328,6 +326,19 @@ require('telescope').setup {
 }
 pcall(require('telescope').load_extension, 'fzf')
 pcall(require('telescope').load_extension, 'ui-select')
+-- Use mini.icons for telescope file icons (nvim-web-devicons removed)
+if pcall(require, 'mini.icons') then
+    local mini_icons = require 'mini.icons'
+    local telescope_utils = require 'telescope.utils'
+    telescope_utils.transform_devicons = function(filename, display, disable_devicons)
+        if not filename or disable_devicons then
+            return display
+        end
+        local icon, hl = mini_icons.get('file', vim.fn.fnamemodify(filename, ':t'))
+        local icon_display = (icon or ' ') .. ' ' .. (display or '')
+        return icon_display, hl, icon
+    end
+end
 local builtin = require 'telescope.builtin'
 vim.keymap.set('n', '<leader>sh', builtin.help_tags, { desc = '[S]earch [H]elp' })
 vim.keymap.set('n', '<leader>sk', builtin.keymaps, { desc = '[S]earch [K]eymaps' })
