@@ -9,10 +9,6 @@
       "rev": "23e5128eb5f629c29532c24a1e733cbe019f05bb",
       "src": "https://github.com/RRethy/base16-nvim"
     },
-    "blink-copilot": {
-      "rev": "7ad8209b2f880a2840c94cdcd80ab4dc511d4f39",
-      "src": "https://github.com/fang2hou/blink-copilot"
-    },
     "blink.cmp": {
       "rev": "78336bc89ee5365633bcf754d93df01678b5c08f",
       "src": "https://github.com/saghen/blink.cmp",
@@ -21,10 +17,6 @@
     "conform.nvim": {
       "rev": "18aeab3d63d350dcf44d64c462cc489a3412af40",
       "src": "https://github.com/stevearc/conform.nvim"
-    },
-    "copilot.vim": {
-      "rev": "a12fd5672110c8aa7e3c8419e28c96943ca179be",
-      "src": "https://github.com/github/copilot.vim"
     },
     "fff.nvim": {
       "rev": "bb6f32a2ada380711f08bb11ba49e6fab23f191b",
@@ -62,10 +54,6 @@
     "mason.nvim": {
       "rev": "bb639d4bf385a4d89f478b83af4d770be05ab7eb",
       "src": "https://github.com/mason-org/mason.nvim"
-    },
-    "mini.animate": {
-      "rev": "a133965b027a6377fddca43f11659af357c12758",
-      "src": "https://github.com/nvim-mini/mini.animate"
     },
     "mini.nvim": {
       "rev": "44657837c7338e52727facc85c1d95bec1f6bd7c",

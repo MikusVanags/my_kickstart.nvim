@@ -154,7 +154,6 @@ vim.keymap.set('n', '<leader>e', '<cmd>Explore<CR>', { desc = '[E]xplore' })
 vim.keymap.set('n', '<leader>se', '<cmd>Sexplore!"<CR>', { desc = '[S]plit [E]xplore' })
 
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
-vim.keymap.set('n', '<leader>tt', '<cmd>vsplit | terminal<CR>', { desc = '[tt]erminal' })
 vim.keymap.set('n', '<leader>tT', function()
     vim.cmd 'tabnew'
     vim.cmd 'terminal'
@@ -310,6 +309,7 @@ require('which-key').setup {
         { '<leader>d', group = '[D]ocument' },
         { '<leader>r', group = '[R]ename' },
         { '<leader>s', group = '[S]earch' },
+        { '<leader>S', group = '[S]alesforce' },
         { '<leader>w', group = '[W]orkspace' },
         { '<leader>t', group = '[T]oggle' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },

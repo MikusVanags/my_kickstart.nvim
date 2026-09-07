@@ -454,10 +454,10 @@ function M.run_with_pick()
   end)
 end
 
-vim.keymap.set('n', '<leader>se', M.open_scratch, { desc = '[S]alesforce [E]xecute anonymous' })
-vim.keymap.set('n', '<leader>sq', M.open_soql, { desc = '[S]alesforce SO[Q]L query' })
-vim.keymap.set('n', '<leader>sS', M.open_sosl, { desc = '[S]alesforce SO[S]L search' })
-vim.keymap.set('n', '<leader>sr', M.run_with_pick, { desc = '[S]alesforce [R]un (auto-detect type)' })
+vim.keymap.set('n', '<leader>Se', M.open_scratch, { desc = '[E]xecute anonymous' })
+vim.keymap.set('n', '<leader>Sq', M.open_soql, { desc = '[Q]uery SOQL' })
+vim.keymap.set('n', '<leader>Ss', M.open_sosl, { desc = '[S]earch SOSL' })
+vim.keymap.set('n', '<leader>Sr', M.run_with_pick, { desc = '[R]un buffer' })
 
 vim.api.nvim_create_user_command('SfApexRun', M.run_with_pick, {})
 vim.api.nvim_create_user_command('SfApexOpen', M.open_scratch, {})
@@ -474,10 +474,10 @@ Commands:
   :SfApexRefresh  - Refresh cached org list
 
 Keymaps:
-  <leader>se      - Open .apex scratch
-  <leader>sq      - Open .soql scratch
-  <leader>sS      - Open .sosl scratch
-  <leader>sr      - Run buffer (auto-detect type)]], vim.log.levels.INFO)
+  <leader>Se      - Open .apex scratch
+  <leader>Sq      - Open .soql scratch
+  <leader>Ss      - Open .sosl scratch
+  <leader>Sr      - Run buffer (auto-detect type)]], vim.log.levels.INFO)
 end, {})
 
 vim.api.nvim_create_autocmd('VimEnter', {
