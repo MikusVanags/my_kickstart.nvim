@@ -275,7 +275,6 @@ vim.pack.add({
     'https://github.com/nvim-neotest/nvim-nio',
     'https://github.com/jay-babu/mason-nvim-dap.nvim',
     'https://github.com/leoluz/nvim-dap-go',
-
 }, { load = false })
 
 -- Plugin setups
@@ -699,3 +698,4 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 require 'custom.toggle_memory'
 require 'custom.zig'
 require 'custom.sf_apex'
+require 'custom.jj_todos'
