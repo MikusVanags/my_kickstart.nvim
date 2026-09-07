@@ -241,7 +241,6 @@ vim.pack.add({
     -- Utility
     'https://github.com/tpope/vim-sleuth',
     'https://github.com/tpope/vim-fugitive',
-    'https://github.com/numToStr/Comment.nvim',
     'https://github.com/lewis6991/gitsigns.nvim',
     'https://github.com/folke/which-key.nvim',
     'https://github.com/folke/todo-comments.nvim',
@@ -280,18 +279,12 @@ vim.pack.add({
     'https://github.com/jay-babu/mason-nvim-dap.nvim',
     'https://github.com/leoluz/nvim-dap-go',
 
-    -- Linting
-    'https://github.com/mfussenegger/nvim-lint',
 }, { load = false })
 
 -- Plugin setups
 
 -- LSP
 require 'custom.lsp'
-
--- Comment.nvim
-require('Comment').setup {}
-require('Comment.ft').set('apex', { '//%s', '/*%s*/' })
 
 -- gitsigns
 require('gitsigns').setup {
@@ -461,6 +454,15 @@ require('todo-comments').setup {
 require('mini.ai').setup { n_lines = 500 }
 require('mini.surround').setup()
 require('mini.icons').setup()
+require('mini.comment').setup()
+
+-- apex uses line comments (mini.comment is per-line only)
+vim.api.nvim_create_autocmd('FileType', {
+    pattern = 'apex',
+    callback = function(ev)
+        vim.bo[ev.buf].commentstring = '//%s'
+    end,
+})
 local statusline = require 'mini.statusline'
 statusline.setup { use_icons = vim.g.have_nerd_font }
 statusline.section_location = function()
@@ -618,21 +620,6 @@ dap.listeners.after.event_initialized['dapui_config'] = dapui.open
 dap.listeners.before.event_terminated['dapui_config'] = dapui.close
 dap.listeners.before.event_exited['dapui_config'] = dapui.close
 require('dap-go').setup()
-
--- Lint
-local lint = require 'lint'
-lint.linters_by_ft = {}
-local lint_augroup = vim.api.nvim_create_augroup('lint', { clear = true })
-vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost', 'InsertLeave' }, {
-    group = lint_augroup,
-    callback = function()
-        require('lint').try_lint()
-    end,
-})
-
-vim.keymap.set('n', 'ff', function()
-    require('fff').find_files()
-end, { desc = 'FFFind files' })
 
 -- Autosave easter egg
 require 'custom.plugins.autosave'

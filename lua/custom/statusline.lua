@@ -1,5 +1,0 @@
-GetStatusLine = function()
-    --
-end
-
-return {}
