@@ -4,6 +4,7 @@ local ToggleMemory = {
     inlay_hints = true,
     diagnostics = true,
     tabs = true,
+    prettier_on_save = true,
     updating = false,
 }
 
@@ -48,6 +49,7 @@ local function toggle_inlay_hints()
             inlay_hints = ToggleMemory.inlay_hints,
             diagnostics = ToggleMemory.diagnostics,
             tabs = ToggleMemory.tabs,
+            prettier_on_save = ToggleMemory.prettier_on_save,
         }
         vim.notify('Inlay hints: ' .. (ToggleMemory.inlay_hints and 'on' or 'off'))
     else
@@ -88,6 +90,7 @@ local function toggle_diagnostics()
         inlay_hints = ToggleMemory.inlay_hints,
         diagnostics = ToggleMemory.diagnostics,
         tabs = ToggleMemory.tabs,
+        prettier_on_save = ToggleMemory.prettier_on_save,
     }
     vim.notify('Diagnostics: ' .. (ToggleMemory.diagnostics and 'on' or 'off'))
 end
@@ -104,8 +107,20 @@ local function toggle_tabs()
         inlay_hints = ToggleMemory.inlay_hints,
         diagnostics = ToggleMemory.diagnostics,
         tabs = ToggleMemory.tabs,
+        prettier_on_save = ToggleMemory.prettier_on_save,
     }
     vim.notify('Tabs: ' .. (ToggleMemory.tabs and 'on' or 'off'))
+end
+
+local function toggle_prettier_on_save()
+    ToggleMemory.prettier_on_save = not ToggleMemory.prettier_on_save
+    save_state {
+        inlay_hints = ToggleMemory.inlay_hints,
+        diagnostics = ToggleMemory.diagnostics,
+        tabs = ToggleMemory.tabs,
+        prettier_on_save = ToggleMemory.prettier_on_save,
+    }
+    vim.notify('Prettier on save: ' .. (ToggleMemory.prettier_on_save and 'on' or 'off'))
 end
 
 function ToggleMemory.toggle_inlay_hints()
@@ -120,12 +135,21 @@ function ToggleMemory.toggle_tabs()
     toggle_tabs()
 end
 
+function ToggleMemory.toggle_prettier_on_save()
+    toggle_prettier_on_save()
+end
+
+function ToggleMemory.is_prettier_on_save_enabled()
+    return ToggleMemory.prettier_on_save
+end
+
 local function apply_startup_state()
     local state = load_state()
 
     ToggleMemory.inlay_hints = state.inlay_hints ~= false
     ToggleMemory.diagnostics = state.diagnostics ~= false
     ToggleMemory.tabs = state.tabs ~= false
+    ToggleMemory.prettier_on_save = state.prettier_on_save ~= false
 
     if not ToggleMemory.diagnostics then
         vim.diagnostic.config { virtual_text = false }
@@ -170,10 +194,12 @@ end
 vim.api.nvim_create_user_command('ToggleInlayHints', ToggleMemory.toggle_inlay_hints, {})
 vim.api.nvim_create_user_command('ToggleDiagnostics', ToggleMemory.toggle_diagnostics, {})
 vim.api.nvim_create_user_command('ToggleTabs', ToggleMemory.toggle_tabs, {})
+vim.api.nvim_create_user_command('TogglePrettierOnSave', ToggleMemory.toggle_prettier_on_save, {})
 
 vim.keymap.set('n', '<leader>th', ToggleMemory.toggle_inlay_hints, { desc = '[T]oggle Inlay [H]ints' })
 vim.keymap.set('n', '<leader>td', ToggleMemory.toggle_diagnostics, { desc = '[T]oggle [D]iagnostics' })
 vim.keymap.set('n', '<leader>tt', ToggleMemory.toggle_tabs, { desc = '[T]oggle [T]abs' })
+vim.keymap.set('n', '<leader>tp', ToggleMemory.toggle_prettier_on_save, { desc = '[T]oggle [P]rettier on save' })
 
 apply_startup_state()
 

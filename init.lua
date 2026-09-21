@@ -387,10 +387,23 @@ require('fidget').setup {}
 require('conform').setup {
     notify_on_error = true,
     format_on_save = function(bufnr)
+        local prettier_filetypes = {
+            apex = true,
+            javascript = true,
+            css = true,
+            xml = true,
+            html = true,
+            json = true,
+        }
+        local filetype = vim.bo[bufnr].filetype
+        if prettier_filetypes[filetype] and not require('custom.toggle_memory').is_prettier_on_save_enabled() then
+            return nil
+        end
+
         local disable_filetypes = { c = true, cpp = true, zig = true }
         return {
             timeout_ms = 500,
-            lsp_fallback = not disable_filetypes[vim.bo[bufnr].filetype],
+            lsp_fallback = not disable_filetypes[filetype],
         }
     end,
     formatters_by_ft = {
