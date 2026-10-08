@@ -246,14 +246,14 @@ vim.pack.add({
     'https://github.com/NvChad/nvim-colorizer.lua',
     'https://github.com/nicolasgb/jj.nvim',
     -- 'https://github.com/github/copilot.vim',
-    { src = 'https://github.com/dmtrKovalenko/fff.nvim', version = 'v0.5.1' },
+    'https://github.com/dmtrKovalenko/fff.nvim',
     'https://github.com/stevearc/conform.nvim',
 
     -- Fuzzy finder
     'https://github.com/nvim-lua/plenary.nvim',
     'https://github.com/nvim-telescope/telescope-fzf-native.nvim',
     'https://github.com/nvim-telescope/telescope-ui-select.nvim',
-    { src = 'https://github.com/nvim-telescope/telescope.nvim', version = '0.1.x' },
+    'https://github.com/nvim-telescope/telescope.nvim',
 
     -- LSP
     'https://github.com/mason-org/mason.nvim',
