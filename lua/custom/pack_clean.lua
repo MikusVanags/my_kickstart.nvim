@@ -2,10 +2,15 @@
 -- "Inactive" means installed on disk but not referenced by a vim.pack.add() call.
 local M = {}
 
+local workspaces = require 'custom.workspaces'
+
 local function inactive()
+    local known = workspaces.known_plugin_set()
     return vim.iter(vim.pack.get(nil, { info = false }))
         :filter(function(p)
-            return not p.active
+            -- Plugins declared by any workspace profile count as used even
+            -- when that workspace is not the current one.
+            return not p.active and not known[p.spec.name]
         end)
         :totable()
 end

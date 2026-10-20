@@ -10,6 +10,8 @@
 -- vim.g.pack_check_delay_ms = 10000.
 local M = {}
 
+local workspaces = require 'custom.workspaces'
+
 local state_file = vim.fn.stdpath 'state' .. '/pack_update_state.json'
 local default_interval_days = 1
 local default_delay_ms = 10000
@@ -146,15 +148,18 @@ local function fetch_plugin(p, callback)
     end)
 end
 
-local function active_plugins()
+local function checkable_plugins()
+    local known = workspaces.known_plugin_set()
     return vim.tbl_filter(function(p)
-        return p.active and vim.uv.fs_stat(p.path) ~= nil
+        -- Include workspace-scoped plugins even when their workspace is not
+        -- active, so they still receive update checks.
+        return (p.active or known[p.spec.name]) and vim.uv.fs_stat(p.path) ~= nil
     end, vim.pack.get(nil, { info = false }))
 end
 
---- Fetch and inspect all active plugins, then call `on_done(results)`.
+--- Fetch and inspect all checkable plugins, then call `on_done(results)`.
 local function check_all(on_done)
-    local plugins = active_plugins()
+    local plugins = checkable_plugins()
     if #plugins == 0 then
         on_done {}
         return

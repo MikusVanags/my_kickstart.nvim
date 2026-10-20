@@ -202,11 +202,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     end,
 })
 
--- Start the Godot editor server socket only when in a Godot project
-if vim.fn.filereadable(vim.fn.getcwd() .. '/project.godot') == 1 then
-    require 'custom.godot'
-end
-
 -- PackChanged hooks (must be before vim.pack.add to catch install events)
 vim.api.nvim_create_autocmd('PackChanged', {
     callback = function(ev)
@@ -440,7 +435,7 @@ require('blink.cmp').setup {
         providers = {
             soql = {
                 name = 'soql',
-                module = 'custom.blink_soql',
+                module = 'custom.salesforce.blink_soql',
             },
         },
     },
@@ -690,9 +685,11 @@ vim.api.nvim_create_autocmd('BufWritePost', {
 
 -- Toggle memory module for persistent toggle states
 require 'custom.toggle_memory'
-require 'custom.zig'
-require 'custom.sf_apex'
 require 'custom.jj_todos'
 require 'custom.journal'
+
+-- Detect the current workspace and load only its plugins/setup.
+require('custom.workspaces').load()
+
 require 'custom.pack_clean'
 require 'custom.pack_update'

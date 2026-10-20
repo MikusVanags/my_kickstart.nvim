@@ -10,6 +10,10 @@ A starting point for Neovim that is:
 
 **NOT** a Neovim distribution, but instead a starting point for your configuration.
 
+> This config uses per-workspace modules (Salesforce, Zig, Godot, …).
+> See [WORKSPACES.md](WORKSPACES.md) for the convention used to add or split
+> workspace-specific plugins and code.
+
 ## Installation
 
 ### Install Neovim
