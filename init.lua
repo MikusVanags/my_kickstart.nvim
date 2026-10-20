@@ -245,7 +245,6 @@ vim.pack.add({
     'https://github.com/nvim-mini/mini.nvim',
     'https://github.com/NvChad/nvim-colorizer.lua',
     'https://github.com/nicolasgb/jj.nvim',
-    -- 'https://github.com/github/copilot.vim',
     'https://github.com/dmtrKovalenko/fff.nvim',
     'https://github.com/stevearc/conform.nvim',
 
@@ -264,7 +263,6 @@ vim.pack.add({
     -- Completion
     { src = 'https://github.com/saghen/blink.cmp', version = vim.version.range '1.*' },
     { src = 'https://github.com/L3MON4D3/LuaSnip', version = vim.version.range '2.*' },
-    -- 'https://github.com/fang2hou/blink-copilot',
 
     -- Treesitter
     'https://github.com/romus204/tree-sitter-manager.nvim',
@@ -444,12 +442,6 @@ require('blink.cmp').setup {
                 name = 'soql',
                 module = 'custom.blink_soql',
             },
-            -- copilot = {
-            --     name = 'copilot',
-            --     module = 'blink-copilot',
-            --     score_offset = -1000,
-            --     async = true,
-            -- },
         },
     },
     snippets = {},
@@ -491,17 +483,6 @@ statusline.setup { use_icons = vim.g.have_nerd_font }
 statusline.section_location = function()
     return '%2l:%-2v'
 end
-
--- copilot.vim
--- vim.g.copilot_no_maps = true
--- vim.api.nvim_create_augroup('github_copilot', { clear = true })
--- vim.api.nvim_create_autocmd({ 'FileType', 'BufUnload' }, {
---     group = 'github_copilot',
---     callback = function(args)
---         vim.fn['copilot#On' .. args.event]()
---     end,
--- })
--- vim.fn['copilot#OnFileType']()
 
 -- nvim-colorizer
 require('colorizer').setup {
@@ -713,3 +694,5 @@ require 'custom.zig'
 require 'custom.sf_apex'
 require 'custom.jj_todos'
 require 'custom.journal'
+require 'custom.pack_clean'
+require 'custom.pack_update'
