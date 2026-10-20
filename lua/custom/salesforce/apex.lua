@@ -34,6 +34,16 @@ local function save_state(data)
   fd:close()
 end
 
+--- Merge top-level keys into the existing state instead of replacing it.
+--- Use this for small updates so the org cache is not wiped.
+local function update_state(patch)
+  local state = load_state()
+  for key, value in pairs(patch) do
+    state[key] = value
+  end
+  save_state(state)
+end
+
 local function sort_orgs(orgs)
   table.sort(orgs, function(a, b)
     if a.is_last_used ~= b.is_last_used then
@@ -51,9 +61,17 @@ local function annotate_and_sort(orgs, last_username)
   return orgs
 end
 
-local function fetch_orgs(callback)
+local function fetch_orgs(callback, with_status)
   local stdout_data = {}
-  vim.fn.jobstart('sf org list --json', {
+  local cmd = { 'sf', 'org', 'list' }
+  if not with_status then
+    -- Avoid the CLI's network checks. The default listing already excludes
+    -- expired/deleted orgs; it just omits connectedStatus.
+    cmd[#cmd + 1] = '--skip-connection-status'
+  end
+  cmd[#cmd + 1] = '--json'
+
+  vim.fn.jobstart(cmd, {
     stdout_buffered = true,
     stderr_buffered = true,
     on_stdout = function(_, data)
@@ -65,7 +83,12 @@ local function fetch_orgs(callback)
     end,
     on_exit = function(_, exit_code)
       if exit_code ~= 0 then
-        callback({})
+        -- Fall back for CLI versions without --skip-connection-status.
+        if not with_status then
+          fetch_orgs(callback, true)
+        else
+          callback({})
+        end
         return
       end
       local raw = table.concat(stdout_data, '\n')
@@ -82,7 +105,9 @@ local function fetch_orgs(callback)
           return
         end
         for _, org in ipairs(category) do
-          if org.connectedStatus == 'Connected' then
+          -- With --skip-connection-status the field is absent; the default
+          -- listing still excludes expired/deleted orgs.
+          if org.connectedStatus == nil or org.connectedStatus == 'Connected' then
             table.insert(orgs, {
               alias = org.alias or org.username,
               username = org.username,
@@ -457,8 +482,8 @@ function M.run_anonymous(org)
   local fname = vim.api.nvim_buf_get_name(bufnr)
   local ft = vim.bo[bufnr].filetype
 
-  -- Record this org as last used
-  save_state { last_org_username = org.username }
+  -- Record this org as last used without dropping the cached org list.
+  update_state { last_org_username = org.username }
 
   local tmpfile = nil
   local cleanup = nil
